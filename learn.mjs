@@ -1,8 +1,8 @@
 // Learn's view of the authored curriculum. Topic outlines are catalogue data, not access rules.
 // Keep this independent of the DOM and saved state so the same decisions guard every entry point.
-import {hasUnit} from './exercises.mjs?b=8b9c4fd';
-import {lessonLock} from './progression.mjs?b=8b9c4fd';
-import {pathOrder} from './checkpoints.mjs?b=8b9c4fd';
+import {hasUnit} from './exercises.mjs?b=6ad91f7';
+import {lessonLock} from './progression.mjs?b=6ad91f7';
+import {pathOrder} from './checkpoints.mjs?b=6ad91f7';
 
 export function orderedTopicLessons(node, path, lessons) {
  const rank = new Map(pathOrder(path).map((id, i) => [id, i]));

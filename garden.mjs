@@ -1,4 +1,4 @@
-import {bindGrass} from './grass-study.mjs?v=watercolor-grass-4&b=8b9c4fd';
+import {bindGrass} from './grass-study.mjs?v=watercolor-grass-4&b=6ad91f7';
 
 // Learn is the title and this garden: a topline with no hint, row labels (the first row has none), topic stones and a
 // footnote, with no progress, legend or next step (LEARN-01).

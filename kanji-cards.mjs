@@ -22,8 +22,8 @@
 //
 // Word cards only. A profile with a kanji track (kanji-characters.mjs; docs/data-contract.md "Kanji sets", 2026-10-29) has
 // no round and no trial: its Kanji page is the sets, practised through kanji-practice.mjs.
-import {resolveText,cardText,seeded,shuffled,cardAnswers,cardClosed,cardPassed} from './kanji-words.mjs?b=8b9c4fd';
-import {DEFAULT_POLICY,rulesOf} from './kanji-policy.mjs?b=8b9c4fd';
+import {resolveText,cardText,seeded,shuffled,cardAnswers,cardClosed,cardPassed} from './kanji-words.mjs?b=6ad91f7';
+import {DEFAULT_POLICY,rulesOf} from './kanji-policy.mjs?b=6ad91f7';
 export const ROUND_SIZE=DEFAULT_POLICY.roundSize;
 export const ROUND_OPENS_AT=DEFAULT_POLICY.opensAt;
 export const TRIAL_ASKS=DEFAULT_POLICY.questions;

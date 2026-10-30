@@ -2,14 +2,14 @@
 // Each source keeps its own scheduler, evidence and assessment rules. This module only reads their due queues, orders a
 // snapshot, tracks the run and records it as its own evidence line. Nothing here touches the DOM; every function takes
 // `now`, so tests inject the clock.
-import {dueReviews,reviewTarget,isConverted} from './recall.mjs?b=8b9c4fd';
-import {reviewQueue,reviewPrompts,RATINGS} from './flashcards.mjs?b=8b9c4fd';
-import {readingProgress,readingPriority,transferPriority,isKanjiWord,hasKanji,inReadingText,sentencesFor,pickSentence} from './vocabulary.mjs?b=8b9c4fd';
-import {hasUnit,unitItems,reviewItems,reviewShown,reviewFocus} from './exercises.mjs?b=8b9c4fd';
-import {patternIndex,pickRetest,isDue,retestRevision,itemPatternIn} from './patterns.mjs?b=8b9c4fd';
-import {recallAt,review,validMemory,inRecovery,episodeOf,recoveryRevision,migrateRecovery,PROMPT_ID,RECOVERY_SUCCESSES,RECOVERY_GAP} from './schedule.mjs?b=8b9c4fd';
-import {recoveryUnits,recoveryQuestion,recoveryTarget} from './recovery.mjs?b=8b9c4fd';
-import {dueTransfers,transferRevision,findText} from './transfer.mjs?b=8b9c4fd';
+import {dueReviews,reviewTarget,isConverted} from './recall.mjs?b=6ad91f7';
+import {reviewQueue,reviewPrompts,RATINGS} from './flashcards.mjs?b=6ad91f7';
+import {readingProgress,readingPriority,transferPriority,isKanjiWord,hasKanji,inReadingText,sentencesFor,pickSentence} from './vocabulary.mjs?b=6ad91f7';
+import {hasUnit,unitItems,reviewItems,reviewShown,reviewFocus} from './exercises.mjs?b=6ad91f7';
+import {patternIndex,pickRetest,isDue,retestRevision,itemPatternIn} from './patterns.mjs?b=6ad91f7';
+import {recallAt,review,validMemory,inRecovery,episodeOf,recoveryRevision,migrateRecovery,PROMPT_ID,RECOVERY_SUCCESSES,RECOVERY_GAP} from './schedule.mjs?b=6ad91f7';
+import {recoveryUnits,recoveryQuestion,recoveryTarget} from './recovery.mjs?b=6ad91f7';
+import {dueTransfers,transferRevision,findText} from './transfer.mjs?b=6ad91f7';
 
 export const DAILY_VERSION=1;
 // One unit is one canonical review task. A passage's whole delayed recall set is one unit, and so is a lesson review

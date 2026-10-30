@@ -1,8 +1,8 @@
 // Passage recall: read, hide the text, answer from memory, reveal the evidence, then recall again after a delay.
 // Shared, dependency-free logic used by the app, the seed, the validator and the tests. Nothing here touches the DOM.
-import {validQuestion,assessChoice} from './assessment.mjs?b=8b9c4fd';
-import {insideRuby,plainWritten} from './vocabulary.mjs?b=8b9c4fd';
-import {review,enterMemory,seedMemory,validMemory,cleanMemory,eventOf,MAX_DAYS,inRecovery,recoveryKey} from './schedule.mjs?b=8b9c4fd';
+import {validQuestion,assessChoice} from './assessment.mjs?b=6ad91f7';
+import {insideRuby,plainWritten} from './vocabulary.mjs?b=6ad91f7';
+import {review,enterMemory,seedMemory,validMemory,cleanMemory,eventOf,MAX_DAYS,inRecovery,recoveryKey} from './schedule.mjs?b=6ad91f7';
 
 export const STATE_VERSION=3;
 export const RECALL_VERSION=1;

@@ -145,7 +145,7 @@
 .kanji-board a.kanji-set-row:focus-visible{outline:3px solid #d27731;outline-offset:2px}
 .kanji-board .kanji-set.is-locked .kanji-set-row{border-color:#6b502a2e;background:transparent;box-shadow:none;opacity:.5}
 .kanji-board .kanji-set-no,.kanji-board .kanji-set-en{color:#6b5a40}
-.kanji-board .kanji-set-title{font-family:'Niwa Brush',serif;font-weight:400;font-synthesis:none;font-size:1.4rem;color:#17130f}
+.kanji-board .kanji-set-kanji{font-family:'Niwa Brush',serif;font-weight:400;font-synthesis:none;font-size:1.4rem;color:#17130f}
 .kanji-board .kanji-set-pill{background:#f3e9d2e6;color:#3b2d1c;box-shadow:inset 0 0 0 1px #6b502a26}
 .kanji-board .kanji-set-pill.is-done{background:#f8e7dbe6;color:#8e2f1b;box-shadow:inset 0 0 0 1px #c23b2240}
 .kanji-board .kanji-set-pill.is-locked{background:transparent}
@@ -177,7 +177,7 @@
  .kanji-board::after{width:30px;height:30px;font-size:21px;right:12px;bottom:10px}
  /* A set's board stays five across: the squares shrink and the brush follows each one's size. */
  .kanji-board .kanji-grid[data-cols="5"] .kanji-card{padding:4px 1px}
- .kanji-board .kanji-set-title{font-size:1.25rem}
+ .kanji-board .kanji-set-kanji{font-size:1.25rem}
 }
 @media(prefers-reduced-motion:reduce){
  .kanji-board .kanji-card-word{transition:none}

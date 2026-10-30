@@ -20,7 +20,7 @@
 // answers}}: met the day a character's reading pages were finished, done the day a set's practice was first finished, run
 // the set practice under way (its questions rebuilt from the seed, so a reload resumes at answers.length). A version 1
 // store (the first course build's daily trials: {met, points, pointDay, known}) migrates by keeping each met day.
-import {localDay,wordReading,kanjiOf} from './kanji-words.mjs?b=8b9c4fd';
+import {localDay,wordReading,kanjiOf} from './kanji-words.mjs?b=6ad91f7';
 export {kanjiOf};
 // The content block's version (kanji.characters) and the learner state's (state.kanjiChars).
 export const KANJI_CHARS_VERSION=1;
@@ -360,10 +360,11 @@ export function setStatus(track,kc,id,opts={}){
  if(!opts?.openAll&&at>0&&!isDone(base,track.lessons[at-1].id))return 'locked';
  return l.kanji.every(e=>charStage(base,e.char)==='met')?'ready':'reading';
 }
-// The sets in track order: [{id, part, number, title, en, status, read (its met kanji), total (its kanji)}].
+// The sets in track order: [{id, part, number, title, en, kanji (its characters in book order), status, read (its met
+// kanji), total (its kanji)}].
 export function setList(track,kc,opts={}){
  const base=storeOf(kc);
- return (track?.lessons??[]).map(l=>({id:l.id,part:l.part,number:l.number,title:l.title,en:l.en,status:setStatus(track,base,l.id,opts),read:l.kanji.filter(e=>charStage(base,e.char)==='met').length,total:l.kanji.length}));
+ return (track?.lessons??[]).map(l=>({id:l.id,part:l.part,number:l.number,title:l.title,en:l.en,kanji:l.kanji.map(e=>e.char),status:setStatus(track,base,l.id,opts),read:l.kanji.filter(e=>charStage(base,e.char)==='met').length,total:l.kanji.length}));
 }
 // The first set not done (the one the learner is on), or null when every set is done.
 export function currentSet(track,kc){

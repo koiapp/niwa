@@ -2,9 +2,9 @@
 // the one-screen note reached from a mistake. A pattern ID sits on a unit point (and carries to its drills) or on a
 // single item; the catalog in lessons.json (`patterns`) adds a title and one contrast. Nothing here touches the DOM;
 // every function takes `now`, so tests inject the clock.
-import {DAY,CONVERTED,isConverted} from './recall.mjs?b=8b9c4fd';
-import {isRetiredLessonItem} from './lesson-retirements.mjs?b=8b9c4fd';
-import {hasUnit,unitItems,unitKeys,statusOf,reviewShown,reviewAnswer,lastReviewAnswer,patternPoints,markupProblems} from './exercises.mjs?b=8b9c4fd';
+import {DAY,CONVERTED,isConverted} from './recall.mjs?b=6ad91f7';
+import {isRetiredLessonItem} from './lesson-retirements.mjs?b=6ad91f7';
+import {hasUnit,unitItems,unitKeys,statusOf,reviewShown,reviewAnswer,lastReviewAnswer,patternPoints,markupProblems} from './exercises.mjs?b=6ad91f7';
 
 export const PATTERNS_VERSION=1;
 // A re-test is queued once first-try misses of one pattern come from this many different lessons, and is due this long
