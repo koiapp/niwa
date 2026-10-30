@@ -310,7 +310,9 @@ function checkpointRoute(key,opts){
 // partRoute: practice/<id>/<part> lands on the part list, practice/<id>, unless that part is open), then practice kinds
 // without a view, then the Kanji page's sets (kanjiRoute). A link or source line is drawn only to a route the guard keeps
 // (rule 9: no route into a locked item).
-function routeGuard(){const opts=lockOpts(),content=loopContent(),progress=loopProgress(opts);return key=>key.startsWith('review/')?'practice':kanjiRoute(practiceRoute(partRoute(loopRoute(checkpointRoute(learnRoute(convertedRoute(key),data.path,lessons.lessons,data.nodes,opts),opts),content,progress),content,progress)));}
+// A build without docs (profile.docs === false, the course build) has no Course guide: #guide opens the Library.
+const docsShipped=profile.docs!==false;
+function routeGuard(){const opts=lockOpts(),content=loopContent(),progress=loopProgress(opts);return key=>key.startsWith('review/')?'practice':!docsShipped&&key.split('/')[0]==='guide'?'library':kanjiRoute(practiceRoute(partRoute(loopRoute(checkpointRoute(learnRoute(convertedRoute(key),data.path,lessons.lessons,data.nodes,opts),opts),content,progress),content,progress)));}
 // The Kanji page's sets (a track profile): #kanji the set list, #kanji/<set> its board, #kanji/<set>/practice its run.
 // With no track every #kanji/… is #kanji; a locked or unknown set lands on the list; the practice of a set still being
 // read (setStatus 'reading') lands on its board, as does any other address under a set.
@@ -1630,7 +1632,7 @@ function library(section='',from=''){
   reading:readingShelves,
   dictionary:dictionarySection,
   decks:decksSection,
-  progress:()=>`${evidenceSection()}${checkpointList()}<h2 class="section-label">Backup</h2><div class="card"><p>Your progress, words and decks are saved in this browser only. Export a backup to keep a copy or to move to another device. Restoring a backup replaces your current progress.</p><div class="actions"><button class="button secondary" id="export-progress">Export progress</button><label class="button secondary" for="import-progress">Restore a backup</label><input class="sr-only" type="file" id="import-progress" accept="application/json,.json"></div><p class="small" id="restore-status" aria-live="polite"></p><p class="small"><a href="#guide">Course guide and documents</a></p></div>`}[section]();
+  progress:()=>`${evidenceSection()}${checkpointList()}<h2 class="section-label">Backup</h2><div class="card"><p>Your progress, words and decks are saved in this browser only. Export a backup to keep a copy or to move to another device. Restoring a backup replaces your current progress.</p><div class="actions"><button class="button secondary" id="export-progress">Export progress</button><label class="button secondary" for="import-progress">Restore a backup</label><input class="sr-only" type="file" id="import-progress" accept="application/json,.json"></div><p class="small" id="restore-status" aria-live="polite"></p>${docsShipped?'<p class="small"><a href="#guide">Course guide and documents</a></p>':''}</div>`}[section]();
  main.innerHTML=libraryTabs(section)+heading(s.label,s.intro,meta)+`<div class="library-page is-${section}">${body}</div>`;
  bindDeckChoosers(main.querySelector('.library-page'));
  if(section==='dictionary')panelRefresh={panel:main,dictionary:bindDictionary().renderList};
