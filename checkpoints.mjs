@@ -84,9 +84,12 @@ export const runStale=(content,run)=>!!run&&!time(run.done)&&(run.items.some(id=
 // ── Pools and selection ─────────────────────────────────────────────────────────────────────────────────
 // For checkpoint n: `recent`, finished lessons placed up to its boundary that no finished checkpoint covered (a lesson
 // finished after its own checkpoint joins the next one), and `earlier`, every lesson finished checkpoints covered.
-export function poolFor(path,n,{completed=[],checkpoints}={}){
- const done=new Set(completed),covered=new Set(coveredLessons(checkpoints)),rank=rankOf(path),sort=a=>a.sort((x,y)=>rank(x)-rank(y));
- const recent=sort(uniq(completed).filter(id=>{const b=blockOf(path,id);return b!==null&&b>=1&&b<=n&&!covered.has(id);}));
+// Sensei mode (`openAll`) reads as a learner who followed the path: every lesson up to the boundary finished and every
+// earlier checkpoint done, so `recent` is the checkpoint's own block and `earlier` the blocks before it.
+const senseiDone=(path,n,completed,openAll)=>openAll?uniq([...completed,...requiredLessons(path,n)]):completed;
+export function poolFor(path,n,{completed=[],checkpoints,openAll=false}={}){
+ const all=senseiDone(path,n,completed,openAll),done=new Set(all),covered=new Set([...coveredLessons(checkpoints),...(openAll?requiredLessons(path,n-1):[])]),rank=rankOf(path),sort=a=>a.sort((x,y)=>rank(x)-rank(y));
+ const recent=sort(uniq(all).filter(id=>{const b=blockOf(path,id);return b!==null&&b>=1&&b<=n&&!covered.has(id);}));
  return {recent,earlier:sort([...covered].filter(id=>done.has(id)))};
 }
 const patternOf=(content,t)=>{if(t.word)return `word:${t.word}`;const l=content?.lessons?.find(x=>x.id===t.lesson);const p=(l?.sections||[]).find(s=>s.kind==='point'&&s.id===t.point);return p?.patternId||`point:${t.point}`;};
@@ -133,15 +136,17 @@ export function selectItems(content,path,{n,recent=[],earlier=[],completed=[],se
 
 // ── Status ──────────────────────────────────────────────────────────────────────────────────────────────
 // Every checkpoint with its state: done; locked (missing: what is still to finish); waiting (an earlier checkpoint comes
-// first); open; started; or stale (an unfinished run whose questions changed with a content update).
-export function checkpointStatus(path,content,{completed=[],checkpoints}={}){
+// first); open; started; or stale (an unfinished run whose questions changed with a content update). Sensei mode
+// (`openAll`) makes locked and waiting open (missing still lists what is unfinished); done, started and stale stay.
+export function checkpointStatus(path,content,{completed=[],checkpoints,openAll=false}={}){
  const done=new Set(completed);
  let before=true;
  return boundaries(path).map(b=>{
   const run=runOf(checkpoints,b.n);
   if(run&&time(run.done))return {...b,status:'done',missing:[],run};
   const missing=requiredLessons(path,b.n).filter(id=>!done.has(id));
-  const status=missing.length?'locked':!before?'waiting':run?(runStale(content,run)?'stale':'started'):'open';
+  const gate=openAll?null:missing.length?'locked':!before?'waiting':null;
+  const status=gate||(run?(runStale(content,run)?'stale':'started'):'open');
   before=false;
   return {...b,status,missing,run};
  });
@@ -158,13 +163,14 @@ export function dueCheckpoint(path,content,opts){const c=nextCheckpoint(path,con
 export const ensureSeed=(store,rand=Math.random)=>{const s=base(store);return s.seed?s:{...s,seed:`s${Math.floor(rand()*36**6).toString(36)}`};};
 const usedItems=store=>uniq(doneRuns(store).flatMap(r=>r.items));
 // Starts checkpoint n, or resumes its unfinished run. A stale run starts again only with restart: true, as a new attempt
-// whose answers so far are dropped. The selection freezes here: later reloads and completions leave it.
-export function startCheckpoint(store,content,path,{n,completed=[],progression,now,restart=false,rand=Math.random}){
- let s=ensureSeed(store,rand);const prev=s.runs[n],status=checkpointStatus(path,content,{completed,progression,checkpoints:s}).find(c=>c.n===n);
+// whose answers so far are dropped. The selection freezes here: later reloads and completions leave it. Sensei mode
+// (`openAll`) starts any checkpoint not done, on the pool poolFor gives it.
+export function startCheckpoint(store,content,path,{n,completed=[],progression,now,restart=false,rand=Math.random,openAll=false}){
+ let s=ensureSeed(store,rand);const prev=s.runs[n],status=checkpointStatus(path,content,{completed,progression,checkpoints:s,openAll}).find(c=>c.n===n);
  if(!status||['locked','waiting','done'].includes(status.status))return {store:s,run:prev||null,started:false};
  if(prev&&!(restart&&runStale(content,prev)))return {store:s,run:prev,started:false};
- const pool=poolFor(path,n,{completed,checkpoints:s}),attempt=(prev?.attempt||0)+1,seed=`${s.seed}|${n}|${attempt}`;
- const pick=selectItems(content,path,{n,...pool,completed,seed,used:usedItems(s)});
+ const pool=poolFor(path,n,{completed,checkpoints:s,openAll}),attempt=(prev?.attempt||0)+1,seed=`${s.seed}|${n}|${attempt}`;
+ const pick=selectItems(content,path,{n,...pool,completed:senseiDone(path,n,completed,openAll),seed,used:usedItems(s)});
  const run={n,after:status.after,attempt,seed,revision:itemsRevision(content,pick.items),started:now,lessons:pool.recent,earlier:pool.earlier,items:pick.items,answers:{},opened:{},done:null};
  s={...s,runs:{...s.runs,[n]:run}};
  return {store:s,run,started:true,short:pick.short};

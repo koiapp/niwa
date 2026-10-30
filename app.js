@@ -6,7 +6,7 @@ import {profile} from './profile.mjs';
 import {stampLine} from './build-stamp.mjs';
 import {STATE_VERSION,KIND_LABELS,STAGE_LABELS,passageKey,phraseKey,enterReview,scheduleReview,intervalOf,emptyRecall,attemptSummary,passageStage,migrateState,readRecallState,emptyLoop,readLoopState,completeBook,completesPassage,CONVERTED,isConverted,evidenceFor,markRuns,choiceOrder,delayedOrder,isDue,draftFor,startAttempt,answerDraft,openSupport,correctDraft,finishAttempt,fromMemory} from './recall.mjs';
 import {DEFAULT_FIELDS,plainWritten,plainReading,toHiragana,indexWords,resolvePath,occurrencesAt,exerciseOccurrences,segmentText,senseFor,formFor,recordDiscovery,readDictionaryState,discoveredWords,wordMatches,entryFields,fieldCatalogue,fieldLabel,moveField,setFieldShown,emptyReadingEvidence,recordReadingMeetings,recordReadingEvent,readingProgress,readingCheckItems,kanjiWordsIn,readingChoices,sentenceRange,readReadingEvidence,stageLabel,transferSummary,readingCheckEvent} from './vocabulary.mjs';
-import {DECK_PRESETS,FACE_FIELDS,RATINGS,NAME_MAX,createDeck,renameDeck,deleteDeck,restoreDeck,addToDeck,removeFromDeck,setDeckFaces,placeField,moveFaceField,fieldSide,cardFaces,rateCard,practiceQueue,decksWith,findDeck,presetFor,readDeckState,syncDeckDiscovery,queueCollection,dequeueCollection,isQueued,commitCollections,dragStep,DRAG_IDLE,HOLD_MS,SESSION_MIN,SESSION_MAX,RELEARN_MS,promptKey,reviewQueue,buildSession,startSession,endSession,currentIndex,revealItem,useSupport,itemSupported,submitRating,ratingPreview,setSessionLimit,reviewStatus,formatWait,hintFor,emptyReviewState,readReviewState,wordContext,dropRecovering} from './flashcards.mjs';
+import {DECK_PRESETS,FACE_FIELDS,RATINGS,NAME_MAX,createDeck,renameDeck,deleteDeck,restoreDeck,addToDeck,removeFromDeck,setDeckFaces,placeField,moveFaceField,fieldSide,cardFaces,rateCard,practiceQueue,decksWith,findDeck,presetFor,sampleWords,hasKanji,readDeckState,syncDeckDiscovery,queueCollection,dequeueCollection,isQueued,commitCollections,dragStep,DRAG_IDLE,HOLD_MS,SESSION_MIN,SESSION_MAX,RELEARN_MS,promptKey,reviewQueue,buildSession,startSession,endSession,currentIndex,revealItem,useSupport,itemSupported,submitRating,ratingPreview,setSessionLimit,reviewStatus,formatWait,hintFor,emptyReviewState,readReviewState,wordContext,dropRecovering} from './flashcards.mjs';
 import {emptyDaily,markStarted,readDailyState,lessonStarted,migrateLeeches} from './session.mjs';
 import {emptyProgression,enterLesson,finishLesson,readProgressionState,lessonLock,openLessons} from './progression.mjs';
 import {stoneState,gardenRows,topicLessonGroups,plannedTitles,checkpointLocation,learnRoute,rowProgress} from './learn.mjs';
@@ -54,7 +54,7 @@ let storageReady=storageWorks();
 // (restore) refuses a showAllKanji that is not true or false, or a reading that names no mode.
 const LEGACY_READING=Object.freeze({kana:false,'kana-kanji':false,ruby:true,full:true});
 function readShowAll(v,{strict=false}={}){
- const bad=()=>{if(strict)throw Error('This file is not a compatible Niwa backup.');return false;};
+ const bad=()=>{if(strict)throw Error(`This file is not a compatible ${profile.name} backup.`);return false;};
  if(typeof v?.showAllKanji==='boolean')return v.showAllKanji;
  if(v?.showAllKanji!==undefined)return bad();
  if(v?.reading===undefined)return false;
@@ -226,12 +226,14 @@ const stageBadge=r=>`<span class="reading-stage is-${r.stage}">${esc(r.label)}</
 // A met kanji word's trial status on the Kanji page (the policy's knownAt passed trials make it known), or null
 // for a word not met. pill: the Dictionary's (“1 of 3 trials”, “Mastered”); line: the word card's (“Met today”,
 // “1 of 3 trials passed”, “Mastered”, and for a known word missed since, that its reading shows again).
-// In a track profile a met word is also Mastered once every kanji of its written form is known on the track (the reward
-// that shows it in plain kanji; its own known is never set there), and otherwise reads as below.
+// In a track profile there are no trials: a met word is Mastered once every kanji of its written form is known on the
+// track (the reward that shows it in plain kanji; its own known is never set there), and otherwise has no status (null),
+// so no pill or line shows and its reading status applies as for any word.
 function kanjiStatus(id){
  const e=state.kanjiWords?.words?.[id];if(!e||typeof e.met!=='string')return null;
  const track=knownSet(),chars=track&&words.has(id)?kanjiOf(plainWritten(words.get(id).word)):[];
  if(chars.length&&chars.every(ch=>track.has(ch)))return {known:true,pill:'Mastered',line:'Mastered'};
+ if(track)return null;
  const points=Number.isInteger(e.points)?Math.min(e.points,kanjiPolicy.knownAt):0,known=typeof e.known==='string';
  const line=known?(e.missed?'Mastered · its reading shows again until you read it right':'Mastered'):!points&&e.met===localDay()?'Met today':`${kanjiTrials(points)} passed`;
  return {known,pill:known?'Mastered':kanjiTrials(points),line};
@@ -1553,12 +1555,17 @@ function unseenView(id){
 }
 function unseenWordLine(id){const line=evidenceLine(transferEvidence(lessons,state.transfer).words[id]);return line?`<p class="small word-unseen-line"><span class="word-label">Unseen texts</span> ${esc(line)}. This is understanding in context, not a reading check.</p>`:'';}
 function unseenEvidenceRow(){const s=unseenSummary(lessons,state.transfer);if(!s.texts)return '';return `<div><dt>Unseen texts</dt><dd>${s.read?`${s.first.correct} of ${s.first.total} right from memory on a first reading${s.later.total?` · ${s.later.correct} of ${s.later.total} right at a delayed check`:''}`:'No unseen texts read yet'}</dd></div>`;}
-// Evidence kinds stay apart: passage recall, kanji readings and kanji words are never pooled into one score. A kanji
-// word is met once its drill is answered and known after KNOWN_POINTS passed trials on the Kanji page (kanji-words.mjs).
+// Evidence kinds stay apart: passage recall, kanji readings, kanji words and kanji sets are never pooled into one score.
+// Kanji readings come from new-sentence reading checks, a review now parked: the row shows only for a store (an older
+// backup) that has some. A kanji word is met once its drill is answered; without a track it is known after the policy's
+// passed trials on the Kanji page (kanji-words.mjs), and in a track profile, which has no trials, known is named only once
+// a word has it. Kanji sets (a track profile only): the sets done and the track kanji read.
 function evidenceSection(){
  const read=lessons.passages.filter(p=>!['new','supported'].includes(passageStage(p,state.recall))).length;
- const t=transferSummary(state.readingEvidence),kw=Object.values(state.kanjiWords?.words||{}),known=kw.filter(x=>x.known).length;
- return `<section aria-labelledby="evidence-title"><h2 class="section-label" id="evidence-title">Evidence by kind</h2><div class="card evidence-kinds"><dl class="evidence-list"><div><dt>Reading</dt><dd>${read} of ${plural(lessons.passages.length,'passage')} answered from memory</dd></div>${unseenEvidenceRow()}<div><dt>Kanji readings</dt><dd>${t.attempts?`${t.passed} of ${t.attempts} correct in sentences you had not read`:'No new-sentence readings yet'}</dd></div><div><dt>Kanji words</dt><dd>${kw.length?`${kw.length} met, ${known} known`:'No kanji words met yet'}</dd></div></dl><p class="small">Each kind is recorded separately. None of them is a mastery score.</p></div></section>${patternSection()}`;
+ const t=transferSummary(state.readingEvidence),kw=Object.values(state.kanjiWords?.words||{}),known=kw.filter(x=>x.known).length,track=hasTrack(kanjiTrack);
+ const sets=track?setList(kanjiTrack,state.kanjiChars):[],charsRead=sets.reduce((n,x)=>n+x.read,0),charsAll=sets.reduce((n,x)=>n+x.total,0);
+ const setsRow=track?`<div><dt>Kanji sets</dt><dd>${charsRead?`${sets.filter(x=>x.status==='done').length} of ${plural(sets.length,'set')} done · ${charsRead} of ${charsAll} kanji read`:'No kanji read yet'}</dd></div>`:'';
+ return `<section aria-labelledby="evidence-title"><h2 class="section-label" id="evidence-title">Evidence by kind</h2><div class="card evidence-kinds"><dl class="evidence-list"><div><dt>Reading</dt><dd>${read} of ${plural(lessons.passages.length,'passage')} answered from memory</dd></div>${unseenEvidenceRow()}${t.attempts>0?`<div><dt>Kanji readings</dt><dd>${t.passed} of ${t.attempts} correct in sentences you had not read</dd></div>`:''}<div><dt>Kanji words</dt><dd>${kw.length?`${kw.length} met${known||!track?`, ${known} known`:''}`:'No kanji words met yet'}</dd></div>${setsRow}</dl><p class="small">Each kind is recorded separately. None of them is a mastery score.</p></div></section>${patternSection()}`;
 }
 // Checkpoints finished or under way, in order, six to a page: the way back to a finished one's results. A due one is
 // also a row on the topic page of the first lesson it locks; one not yet started is not listed here.
@@ -1572,18 +1579,21 @@ function checkpointList(){
 function patternSection(){
  const index=patternIndex(lessons);if(!index.size)return '';
  const unseen=transferEvidence(lessons,state.transfer).patterns,started=id=>lessonStarted(state,id),title=id=>esc(lessons.lessons.find(l=>l.id===id)?.title||id),now=Date.now();
- const rows=[...index.values()].map(p=>{
+ // Rows follow the Learn path: by the path index of the earliest lesson teaching each pattern, those taught by no lesson
+ // last, ties in content order.
+ const at=new Map(data.path.core.map((id,k)=>[id,k])),first=p=>Math.min(...p.teaching.filter(t=>at.has(t.lesson)).map(t=>at.get(t.lesson)));
+ const rows=[...index.values()].map((p,k)=>({p,k,o:first(p)})).sort((a,b)=>a.o-b.o||a.k-b.k).map(({p})=>{
   const e=patternEvidence(lessons,state,p.id,{started,index,now,unseen:unseen[p.id]||null}),where=e.missedIn.map(title).join(' and ');
   const open=!e.open?(e.transferred?`Correct in a drill from another lesson on ${shortDate(e.transferred)}.`:''):where?`Missed in ${where}.`:'Missed in a drill.';
   return `<div><dt>${jp(p.title)}</dt><dd><span class="reading-stage is-${e.stage}">${esc(e.label)}</span>${open?` <span class="pattern-open${e.open?' is-open':''}">${open}</span>`:''}${evidenceLine(e.unseen)?` <span class="pattern-unseen">Unseen texts: ${esc(evidenceLine(e.unseen))}.</span>`:''}</dd></div>`;
  }).join('');
- return `<section aria-labelledby="pattern-evidence-title"><h2 class="section-label" id="pattern-evidence-title">Grammar patterns</h2><div class="card evidence-kinds pattern-evidence"><dl class="evidence-list">${rows}</dl><p class="small">Seen: its note or lesson opened. Practised: a drill answered. Retrieved: right at the first try. Retained: right in a closed-book review. Transferred: right in a drill from another lesson, or in an unseen text answered from memory. Independently demonstrated needs an unfamiliar task with a rubric, which these drills are not. None of this is a mastery score.</p></div></section>`;
+ return `<section aria-labelledby="pattern-evidence-title"><h2 class="section-label" id="pattern-evidence-title">Grammar patterns</h2><div class="card evidence-kinds pattern-evidence"><dl class="evidence-list">${rows}</dl><p class="small">Seen: its note or lesson opened. Practised: a drill answered. Retrieved: right at the first try. Retained: right in a closed-book review. Transferred: right in a drill from another lesson${lessons.transfer?.texts?.length>0?', or in an unseen text answered from memory':''}. Independently demonstrated needs an unfamiliar task with a rubric, which these drills are not. None of this is a mastery score.</p></div></section>`;
 }
 // Library: the learner's collection, one page per section. The sections open under Library in the sidebar and as tabs
 // at the top of each section on small screens, where the sidebar is a bottom bar.
 const LIBRARY_SECTIONS=[
  {id:'reading',label:'Reading',intro:'Short books on everyday topics.'},
- {id:'dictionary',label:'Dictionary',intro:'Words you have tapped in lessons and readings, and the course word lists.'},
+ {id:'dictionary',label:'Dictionary',intro:'Words you have tapped in lessons and readings.'},
  {id:'decks',label:'Flashcard decks',intro:'Group words from your dictionary and practice them from memory.'},
  {id:'progress',label:'Progress & backup',intro:'What you have shown so far, by kind, and a copy of this browser’s progress.'}];
 function librarySection(name,id){if(name==='library')return LIBRARY_SECTIONS.some(s=>s.id===id)?id:'';return name==='passage'||name==='unseen'?'reading':name==='deck'||name==='recall'?'decks':'';}
@@ -1633,7 +1643,9 @@ function library(section='',from=''){
   dictionary:dictionarySection,
   decks:decksSection,
   progress:()=>`${evidenceSection()}${checkpointList()}<h2 class="section-label">Backup</h2><div class="card"><p>Your progress, words and decks are saved in this browser only. Export a backup to keep a copy or to move to another device. Restoring a backup replaces your current progress.</p><div class="actions"><button class="button secondary" id="export-progress">Export progress</button><label class="button secondary" for="import-progress">Restore a backup</label><input class="sr-only" type="file" id="import-progress" accept="application/json,.json"></div><p class="small" id="restore-status" aria-live="polite"></p>${docsShipped?'<p class="small"><a href="#guide">Course guide and documents</a></p>':''}</div>`}[section]();
- main.innerHTML=libraryTabs(section)+heading(s.label,s.intro,meta)+`<div class="library-page is-${section}">${body}</div>`;
+ // The Dictionary's intro names the course word lists only when one shows.
+ const intro=section==='dictionary'&&shownPacks().length?'Words you have tapped in lessons and readings, and the course word lists.':s.intro;
+ main.innerHTML=libraryTabs(section)+heading(s.label,intro,meta)+`<div class="library-page is-${section}">${body}</div>`;
  bindDeckChoosers(main.querySelector('.library-page'));
  if(section==='dictionary')panelRefresh={panel:main,dictionary:bindDictionary().renderList};
  else if(section==='decks'){bindDecks();panelRefresh={panel:main,decks:renderDeckList};}
@@ -1643,11 +1655,12 @@ function library(section='',from=''){
 function showBuildStamp(page){fetch('build.json').then(r=>r.ok?r.json():null).then(info=>{const line=stampLine(info);if(!line||!page.isConnected)return;const p=document.createElement('p');p.className='small build-stamp';p.textContent=line;page.append(p);}).catch(()=>{});}
 function bindBackup(){
  $('#export-progress').onclick=()=>download(profile.backupFile,{app:profile.appTag,...state});
- $('#import-progress').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>2_000_000)throw Error('This backup is too large.');const value=JSON.parse(await file.text());const restored=validateBackup(value);deckUndo=null;state=syncDeckDiscovery(restored);state={...state,recovery:migrateLeeches(state,lessons,Date.now())};save();library('progress');kanjiSwitch();$('#restore-status').textContent='Backup restored. Your previous browser state was replaced.';}catch(err){$('#restore-status').textContent=err.message||'This file is not a valid Niwa backup.';}e.target.value='';};
+ $('#import-progress').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>2_000_000)throw Error('This backup is too large.');const value=JSON.parse(await file.text());const restored=validateBackup(value);deckUndo=null;state=syncDeckDiscovery(restored);state={...state,recovery:migrateLeeches(state,lessons,Date.now())};save();library('progress');kanjiSwitch();$('#restore-status').textContent='Backup restored. Your previous browser state was replaced.';}catch(err){$('#restore-status').textContent=err.message||`This file is not a valid ${profile.name} backup.`;}e.target.value='';};
 }
 // Personal dictionary: discovered words (Your words), with learner-chosen fields in learner-chosen order. Once a kanji
 // word is met, a Kanji words filter lists the met kanji words (kanjiCollection, in the order met), each with its written
-// form, meaning and trial status pill, whether tapped or not. The course word lists (WORD_PACKS, lessons.vocabulary
+// form, meaning and trial status pill (none in a track profile until Mastered), whether tapped or not. The course word
+// lists (wordPacks, lessons.vocabulary
 // `pack`) are filters too: every word of the pack, met or not, with the pack's meaning quiz. The search applies to each.
 // In a track profile, once a character is met, a Kanji filter follows Kanji words: the met track characters in the order
 // met (by met day, then track order), each with its meanings, its readings (On and Kun, kana only) and the pill Read (its
@@ -1669,8 +1682,17 @@ function charEntry({entry:e}){
  const field=(label,value,cls='')=>value?`<div class="dict-field${cls}"><dt>${label}</dt><dd>${value}</dd></div>`:'';
  return `<article class="dict-entry dict-char" aria-label="${esc(e.char)}, ${esc(e.meanings.join(', '))}"><dl>${field('Kanji',`<span class="written-form" lang="ja">${esc(e.char)}</span>`,' dict-lead')}${field('Meaning',esc(e.meanings.join(', ')))}${field('On',kana(e.on.map(x=>x.kana)))}${field('Kun',kana(e.kun.map(x=>kunKana(x.kana))))}</dl><p class="small dict-kanji"><span class="kanji-pill"><span class="sr-only">Kanji: </span>Read</span></p></article>`;
 }
-const WORD_PACKS=[{id:'core',label:'Core words'},{id:'plus1',label:'Restaurant extra'}];
+// The course word lists, declared by the content (lessons.json vocabularyPacks: [{id, label, note?, noteUntil?}]) and read
+// leniently at start: an entry without a non-empty id and label, or with a note or noteUntil that is not a string, is
+// dropped; none for content without them. A pack shows only when it has a word. Its note shows above its Practice button
+// while the set noteUntil names is not open (always, without noteUntil).
+let wordPacks=[];
+function readWordPacks(content){
+ const str=v=>typeof v==='string'&&v.trim()!=='',opt=v=>v===undefined||typeof v==='string';
+ return (Array.isArray(content?.vocabularyPacks)?content.vocabularyPacks:[]).filter(p=>p&&typeof p==='object'&&str(p.id)&&str(p.label)&&opt(p.note)&&opt(p.noteUntil)).map(({id,label,note,noteUntil})=>({id,label,note,noteUntil}));
+}
 const packWords=pack=>lessons.vocabulary.filter(w=>w.pack===pack);
+const shownPacks=()=>wordPacks.filter(p=>packWords(p.id).length>0);
 // One column: the search label, a toolbar (the search, then two icon buttons, Filter and the entry layout, each opening its
 // own panel under the toolbar, one at a time), the count line and the list.
 const TOOL_ICONS={
@@ -1678,7 +1700,7 @@ const TOOL_ICONS={
  layout:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>'};
 function dictionarySection(){
  const button=(id,label,on=false)=>`<button type="button"${on?' class="active"':''} data-dict-filter="${id}" aria-pressed="${on}">${esc(label)}</button>`;
- const filter=`<div class="tabs dictionary-filter" role="group" aria-label="Words shown">${button('all','Your words',true)}${kanjiCollection().length?button('kanji','Kanji words'):''}${kanjiCharList().length?button('chars','Kanji'):''}${WORD_PACKS.map(p=>button(p.id,`${p.label} · ${packWords(p.id).length}`)).join('')}</div>`;
+ const filter=`<div class="tabs dictionary-filter" role="group" aria-label="Words shown">${button('all','Your words',true)}${kanjiCollection().length?button('kanji','Kanji words'):''}${kanjiCharList().length?button('chars','Kanji'):''}${shownPacks().map(p=>button(p.id,`${p.label} · ${packWords(p.id).length}`)).join('')}</div>`;
  const tool=(id,label,icon)=>`<button type="button" class="icon-button dictionary-tool" id="dictionary-${id}-button" aria-label="${label}" aria-expanded="false" aria-controls="dictionary-${id}-panel">${icon}${id==='filter'?'<span class="dictionary-tool-dot" aria-hidden="true"></span>':''}</button>`;
  return `<section class="dictionary" aria-label="Your dictionary">${storageNotice()}<div class="dictionary-main"><label class="form-label" for="dictionary-search">Search by kanji, kana, or English</label><div class="dictionary-toolbar"><input type="search" id="dictionary-search" autocomplete="off" spellcheck="false">${tool('filter','Filter words',TOOL_ICONS.filter)}${tool('layout','Change what entries show',TOOL_ICONS.layout)}</div><div class="card dictionary-panel" id="dictionary-filter-panel" hidden>${filter}</div><div class="card dictionary-panel" id="dictionary-layout-panel" role="group" aria-label="Change what entries show" hidden><p class="small">Tick the fields to show. Use the arrows to reorder them; the first is shown largest.</p><ol class="config-list" id="field-config"></ol><p class="sr-only" id="field-status" aria-live="polite"></p><h4 class="preview-label" id="preview-label">Preview</h4><div id="dictionary-preview" role="group" aria-labelledby="preview-label"></div></div><p class="small" id="dictionary-count" role="status" aria-live="polite"></p><div id="dictionary-list"></div></div></section>`;
 }
@@ -1706,14 +1728,14 @@ function bindDictionary(){
   quiz=false;searchRow.forEach(el=>el.hidden=false);
   if(filter==='kanji')return renderKanji();
   if(filter==='chars')return renderChars();
-  if(WORD_PACKS.some(p=>p.id===filter))return renderPack(filter);
+  if(shownPacks().some(p=>p.id===filter))return renderPack(filter);
   const query=search.value.trim(),list=discoveredWords(lessons.vocabulary,state.discovered,query),count=total();
   $('#dictionary-count').textContent=!count?'':query?`${list.length} of ${count} words match “${query}”.`:`${count} word${count>1?'s':''} discovered.`;
   $('#dictionary-list').innerHTML=!count?`<div class="empty">No words yet. Select a marked word in a lesson or one of your <a href="#library/reading">readings</a>. It will appear here with its reading and meaning.</div>`:!list.length?`<div class="empty">No discovered word matches “${esc(query)}”. Try kana, kanji, or an English word.</div>`:`<div class="dictionary-list">${list.map(w=>dictionaryEntry(w,state.dictionary.fields)).join('')}</div>`;
  }
  function renderKanji(){
   const query=search.value.trim(),met=kanjiCollection(),list=met.filter(x=>wordMatches(words.get(x.id),query));
-  $('#dictionary-count').textContent=query?`${list.length} of ${met.length} kanji words match “${query}”.`:`${plural(met.length,'kanji word')} met · ${met.filter(x=>kanjiStatus(x.id)?.known).length} mastered.`;
+  $('#dictionary-count').textContent=query?`${list.length} of ${met.length} kanji words match “${query}”.`:(m=>`${plural(met.length,'kanji word')} met${m||!hasTrack(kanjiTrack)?` · ${m} mastered`:''}.`)(met.filter(x=>kanjiStatus(x.id)?.known).length);
   $('#dictionary-list').innerHTML=list.length?`<div class="dictionary-list">${list.map(x=>dictionaryEntry(words.get(x.id),KANJI_ENTRY_FIELDS)).join('')}</div>`:`<div class="empty">No kanji word matches “${esc(query)}”. Try kana, kanji, or an English word.</div>`;
  }
  // The met track characters (kanjiCharList), with their count line: 12 kanji read.
@@ -1724,11 +1746,11 @@ function bindDictionary(){
  }
  // A course word list: every word of the pack, in lessons.vocabulary order, as entries in the learner's layout; Details
  // opens a word without adding it to the dictionary (openWord with no source). With no query, the pack's Practice button
- // sits above the entries, after a note for Restaurant extra while Everyday dishes is not open.
+ // sits above the entries, after the pack's note while it applies (readWordPacks).
  function renderPack(pack){
-  const query=search.value.trim(),all=packWords(pack),list=all.filter(w=>wordMatches(w,query)),name=WORD_PACKS.find(p=>p.id===pack).label;
+  const query=search.value.trim(),all=packWords(pack),list=all.filter(w=>wordMatches(w,query)),p=wordPacks.find(x=>x.id===pack),name=p.label;
   $('#dictionary-count').textContent=query?`${list.length} of ${all.length} words in ${name} match “${query}”.`:`${all.length} words in ${name}.`;
-  const start=query?'':`${pack==='plus1'&&!setOpen('everyday-dishes')?'<p class="callout dictionary-callout">You can study these words now.</p>':''}<div class="actions dictionary-practice"><button type="button" class="button" id="start-retrieval">Practice these ${all.length} words</button></div>`;
+  const start=query?'':`${p.note&&(!p.noteUntil||!setOpen(p.noteUntil))?`<p class="callout dictionary-callout">${esc(p.note)}</p>`:''}<div class="actions dictionary-practice"><button type="button" class="button" id="start-retrieval">Practice these ${all.length} words</button></div>`;
   $('#dictionary-list').innerHTML=start+(list.length?`<div class="dictionary-list">${list.map(w=>dictionaryEntry(w,state.dictionary.fields)).join('')}</div>`:`<div class="empty">No word in ${esc(name)} matches “${esc(query)}”. Try kana, kanji, or an English word.</div>`);
   if(!query)$('#start-retrieval').onclick=()=>retrieve(pack);
  }
@@ -1762,7 +1784,7 @@ function bindDictionary(){
  // Your words by its dot and its label.
  const choose=id=>{
   filter=filters.some(x=>x.dataset.dictFilter===id)?id:'all';filters.forEach(x=>{const on=x.dataset.dictFilter===filter;x.classList.toggle('active',on);x.setAttribute('aria-pressed',String(on));});
-  const name=filter==='kanji'?'Kanji words':filter==='chars'?'Kanji':WORD_PACKS.find(p=>p.id===filter)?.label,button=tools[0].button;
+  const name=filter==='kanji'?'Kanji words':filter==='chars'?'Kanji':wordPacks.find(p=>p.id===filter)?.label,button=tools[0].button;
   button.classList.toggle('is-filtered',!!name);button.setAttribute('aria-label',name?`Filter words, showing ${name}`:'Filter words');
  };
  filters.forEach(b=>b.onclick=()=>{choose(b.dataset.dictFilter);renderList();showPanel(null);tools[0].button.focus();});
@@ -1771,7 +1793,7 @@ function bindDictionary(){
  function renderConfig(){
   const fields=state.dictionary.fields;
   cfg.innerHTML=fieldCatalogue(fields).map(f=>{const i=fields.indexOf(f.id);return `<li class="config-row${f.shown?'':' off'}"><label><input type="checkbox" data-field-toggle="${f.id}" ${f.shown?'checked':''} ${f.shown&&fields.length===1?'disabled':''}><span>${esc(f.label)}</span></label>${f.shown?`<span class="config-pos" aria-hidden="true">${i+1}</span><span class="config-moves"><button type="button" class="icon-button" data-field-move="${f.id}" data-delta="-1" aria-label="Move ${esc(f.label)} up" ${i===0?'disabled':''}>↑</button><button type="button" class="icon-button" data-field-move="${f.id}" data-delta="1" aria-label="Move ${esc(f.label)} down" ${i===fields.length-1?'disabled':''}>↓</button></span>`:''}</li>`;}).join('');
-  const sample=discoveredWords(lessons.vocabulary,state.discovered)[0]||words.get('spicy')||lessons.vocabulary[0];
+  const sample=discoveredWords(lessons.vocabulary,state.discovered)[0]||words.get(sampleWords(lessons.vocabulary)[0])||lessons.vocabulary[0];
   $('#dictionary-preview').innerHTML=dictionaryEntry(sample,fields,true)+(isDiscovered(sample.id)?'':'<p class="small">Sample entry. Your own words will use this layout.</p>');
  }
  // A layout change redraws the list shown; a running quiz, which shows no fields, keeps its place.
@@ -1793,6 +1815,11 @@ function bindDictionary(){
 const JA_FIELDS=['reading','written','example'];
 const SHORT_FIELDS=['reading','written','gloss'];
 const wordName=id=>plainWritten(words.get(id)?.word||id);
+// The note under a deck preview shown with sample words (sampleWords: a kanji word, then a kana-only one).
+function sampleNote(ids){
+ const said=ids.map(id=>`${wordName(id)} ${hasKanji(words.get(id))?'has kanji':'is written in kana'}`);
+ return said.length>1?`Sample words: ${said.join(' and ')}.`:`Sample word: ${said[0]}.`;
+}
 const plural=(n,word)=>`${n} ${word}${n===1?'':'s'}`;
 function deckChanged({discovered=false}={}){if(panelRefresh?.panel!==main)return;panelRefresh.decks?.();if(discovered)panelRefresh.dictionary?.();}
 // A chooser opened from a text carries its source and occurrence, so a card records where it was collected.
@@ -1936,7 +1963,7 @@ function bindDecks(){
   e.preventDefault();const r=createDeck(state,input.value);
   if(r.error){$('#deck-create-status').textContent=r.error;input.focus();return;}
   commit(r.state);deckUndo=null;input.value='';renderDeckList();rebuildChoosers();
-  $('#deck-create-status').textContent=`Created “${r.deck.name}”. Choose Add to deck on any dictionary entry to fill it.`;
+  $('#deck-create-status').textContent=`Created “${r.deck.name}”. Tap a word in a lesson, practice or reading, or use Add to deck in the Dictionary, to fill it.`;
  };
  renderDeckList();
 }
@@ -1957,10 +1984,13 @@ function deckView(id){
  main.innerHTML=`<div class="deck-page"><div class="panel-toolbar"><a class="back-link" href="#library/decks">← Flashcard decks</a><span class="small">Flashcard deck</span></div><div class="page-heading"><div><h1 id="deck-title">${esc(deck.name)}</h1><p id="deck-count"></p></div><div id="deck-practice-slot"></div></div>${storageNotice()}<div class="deck-layout"><section class="card deck-cards-card" aria-labelledby="deck-cards-title"><h2 id="deck-cards-title" tabindex="-1">Cards</h2><p class="small">Removing a card keeps the word in your dictionary.</p><p class="small" id="deck-cards-status" role="status" aria-live="polite"></p><div id="deck-cards"></div></section><div class="deck-side"><section class="card" aria-labelledby="deck-format-title"><h2 id="deck-format-title">Card format</h2><p class="small">Choose what each side of the card shows. This applies to every card in the deck.</p><fieldset class="preset-group"><legend class="form-label">Presets</legend>${DECK_PRESETS.map(p=>`<label class="preset-option"><input type="radio" name="deck-preset" value="${p.id}"><span>${esc(p.label)}</span></label>`).join('')}<label class="preset-option"><input type="radio" name="deck-preset" value="custom" disabled><span>Custom · set below</span></label></fieldset><p class="small">A field can be on one side only, and each side needs at least one. Reordering keeps each word’s review schedule; moving, adding or removing a field starts a new one.</p><div id="face-config"></div><p class="small form-error" id="face-error" role="alert"></p><p class="sr-only" id="face-status" aria-live="polite"></p><h3 class="preview-label" id="card-preview-label">Preview</h3><label class="form-label" for="preview-word">Preview with</label><select id="preview-word"></select><div id="card-preview" role="group" aria-labelledby="card-preview-label"></div></section><section class="card" aria-labelledby="deck-settings-title"><h2 id="deck-settings-title">Deck settings</h2><form id="deck-rename" novalidate><label class="form-label" for="deck-name">Deck name</label><div class="inline-form"><input id="deck-name" maxlength="${NAME_MAX}" value="${esc(deck.name)}" autocomplete="off" spellcheck="false"><button class="button secondary" type="submit">Rename</button></div><p class="small" id="deck-rename-status" role="status" aria-live="polite"></p></form><h3 class="preview-label">Delete deck</h3><p class="small">Deletes this deck only. The words, their review schedules and your lesson progress are kept. You can undo this in the Library.</p><button type="button" class="button secondary danger" id="delete-deck">Delete deck</button></section></div></div></div>`;
  const current=()=>findDeck(state,id),cfg=$('#face-config'),pick=$('#preview-word');
  function renderPreview(){
-  const d=current(),options=(d.cards.length?d.cards.map(c=>c.word):['water','soba']).filter(w=>words.has(w)),keep=options.includes(pick.value)?pick.value:options[0];
+  const d=current(),own=d.cards.map(c=>c.word).filter(w=>words.has(w)),samples=own.length?[]:sampleWords(lessons.vocabulary).filter(w=>words.has(w));
+  const options=own.length?own:samples,keep=options.includes(pick.value)?pick.value:options[0];
+  [pick,main.querySelector('label[for="preview-word"]'),$('#card-preview-label')].forEach(el=>{if(el)el.hidden=!options.length;});
   pick.innerHTML=options.map(w=>`<option value="${esc(w)}"${w===keep?' selected':''}>${esc(wordName(w))} · ${esc(words.get(w).reading)}</option>`).join('');
+  if(!keep){$('#card-preview').innerHTML='';return;}
   const faces=cardFaces(words.get(keep),d);
-  $('#card-preview').innerHTML=`<div class="card-preview"><div class="flashcard-face"><span class="eyebrow">FRONT</span>${faceHTML(faces.front,'front')}</div><div class="flashcard-face is-back"><span class="eyebrow">BACK</span>${faceHTML(faces.back,'back')}</div></div>${d.cards.length?'':'<p class="small">Sample words: お水 has kanji and そば is written in kana. Your cards will use this format.</p>'}`;
+  $('#card-preview').innerHTML=`<div class="card-preview"><div class="flashcard-face"><span class="eyebrow">FRONT</span>${faceHTML(faces.front,'front')}</div><div class="flashcard-face is-back"><span class="eyebrow">BACK</span>${faceHTML(faces.back,'back')}</div></div>${samples.length?`<p class="small">${esc(sampleNote(samples))} Your cards will use this format.</p>`:''}`;
  }
  function renderFormat(){
   const d=current(),preset=presetFor(d)?.id||'custom';
@@ -1971,7 +2001,7 @@ function deckView(id){
   const d=current();if(!d)return;const cards=d.cards.filter(c=>words.has(c.word)),guard=routeGuard();
   $('#deck-count').textContent=`${plural(cards.length,'card')} · ${presetFor(d)?.label||'Custom format'}`;
   $('#deck-practice-slot').innerHTML=cards.length?`<a class="button" href="#recall/${esc(id)}">Practice this deck</a>`:'';
-  $('#deck-cards').innerHTML=cards.length?`<ul class="deck-card-list">${cards.map(c=>{const w=words.get(c.word),review=reviewStatus(state.wordReviews,promptKey(c.word,d.front,d.back),Date.now());return `<li data-card="${esc(w.id)}"><div class="deck-card-word"><span class="jp written-form" lang="ja">${jp(w.word,{display:'kanji-reading'})}</span><span class="small"><span lang="ja">${esc(w.reading)}</span> · ${esc(w.meaning)}</span>${collectedFrom(c.source,guard)}<span class="badge">${review.state==='new'?'New':review.state==='due'?'Due now':`Next review ${esc(formatWait(review.due-Date.now()))}`}</span></div><div class="deck-card-actions"><button type="button" class="button secondary small" data-card-details="${esc(w.id)}" aria-haspopup="dialog">Details<span class="sr-only"> for ${esc(wordName(w.id))}</span></button><button type="button" class="button secondary small" data-card-remove="${esc(w.id)}">Remove<span class="sr-only"> ${esc(wordName(w.id))} from this deck</span></button></div></li>`;}).join('')}</ul>`:`<div class="empty">This deck is empty. In Library → Dictionary, choose <strong>Add to deck</strong> on an entry, or select a marked word in one of your readings.</div>`;
+  $('#deck-cards').innerHTML=cards.length?`<ul class="deck-card-list">${cards.map(c=>{const w=words.get(c.word),review=reviewStatus(state.wordReviews,promptKey(c.word,d.front,d.back),Date.now());return `<li data-card="${esc(w.id)}"><div class="deck-card-word"><span class="jp written-form" lang="ja">${jp(w.word,{display:'kanji-reading'})}</span><span class="small"><span lang="ja">${esc(w.reading)}</span> · ${esc(w.meaning)}</span>${collectedFrom(c.source,guard)}<span class="badge">${review.state==='new'?'New':review.state==='due'?'Due now':`Next review ${esc(formatWait(review.due-Date.now()))}`}</span></div><div class="deck-card-actions"><button type="button" class="button secondary small" data-card-details="${esc(w.id)}" aria-haspopup="dialog">Details<span class="sr-only"> for ${esc(wordName(w.id))}</span></button><button type="button" class="button secondary small" data-card-remove="${esc(w.id)}">Remove<span class="sr-only"> ${esc(wordName(w.id))} from this deck</span></button></div></li>`;}).join('')}</ul>`:`<div class="empty">This deck is empty. Tap a word in a lesson, practice or reading and choose <strong>Add to deck</strong>, or use <strong>Add to deck</strong> in the Dictionary.</div>`;
   renderPreview();
  }
  function setFaces(front,back,message,focus){
@@ -2028,14 +2058,15 @@ function recallView(id){
  const facesFor=it=>{const d=[deck,...state.decks].find(x=>x&&promptKey(it.word,x.front,x.back)===it.key)||it;return cardFaces(words.get(it.word),d);};
  // Where the word was met (wordContext), shown with the answer only. A passage with a from-memory recall due or under way
  // keeps its sentence back, so a flashcard never previews it. A lesson or book that is not open is its title in plain
- // text, without its sentence. The session is saved at every step, so the learner can visit an open source and rate the
+ // text, without its sentence. The link reads “Read it in” a lesson or passage whose sentence is shown, else “Open”.
+ // The session is saved at every step, so the learner can visit an open source and rate the
  // card on return; the link takes focus again when they come back.
  const sourceHTML=wordId=>{
   const c=wordContext(state,lessons,wordId,{deck:deck?.id});if(!c)return '';
   if(!routeOpen(`${c.kind}/${c.id}`))return `<div class="answer-source"><h3 class="preview-label">${c.recorded?'Where you collected it':'Where it appears'}</h3><p class="small">${esc(c.title)}</p></div>`;
   const held=c.kind==='passage'&&(isDue(state.reviews[passageKey(c.id)])||!!draftFor(state.recall,c.id));
   const line=c.line&&!held?`<p class="jp source-line" lang="ja">${jp(c.line.before)}<mark class="source-word">${jp(c.line.surface)}</mark>${jp(c.line.after)}</p>`:'';
-  return `<div class="answer-source"><h3 class="preview-label">${c.recorded?'Where you collected it':'Where it appears'}</h3>${line}${held?'<p class="small">This passage has a recall due or in progress, so its text stays hidden here until you answer it from memory.</p>':''}<p class="small"><a href="#${c.kind}/${esc(c.id)}" id="source-link">${esc(held?`Open ${c.title}`:`Read it in ${c.title}`)}</a> · Your session is kept; come back here to rate this card.</p></div>`;
+  return `<div class="answer-source"><h3 class="preview-label">${c.recorded?'Where you collected it':'Where it appears'}</h3>${line}${held?'<p class="small">This passage has a recall due or in progress, so its text stays hidden here until you answer it from memory.</p>':''}<p class="small"><a href="#${c.kind}/${esc(c.id)}" id="source-link">${esc(held||!line||c.kind==='practice'?`Open ${c.title}`:`Read it in ${c.title}`)}</a> · Your session is kept; come back here to rate this card.</p></div>`;
  };
  function render(focus){
   // A card whose word entered recovery leaves a session in progress, repeats included (flashcards.mjs dropRecovering).
@@ -2114,7 +2145,7 @@ function download(name,value,type='application/json'){const blob=new Blob([typeo
 // version 1 store migrates) are read strictly; a backup from before them
 // starts with none. A backup carries kanjiChars because it exports the whole state. The switch (showAllKanji) comes from the backup's
 // reading mode when it has none (readShowAll).
-function validateBackup(raw){if(raw?.app!==profile.appTag||![1,2,STATE_VERSION].includes(raw.version))throw Error('This file is not a compatible Niwa backup.');const v=migrateState(raw);if(!v||!Array.isArray(v.completed)||!v.completed.every(id=>lessons.lessons.some(l=>l.id===id))||typeof v.answers!=='object'||!v.answers||Array.isArray(v.answers)||typeof v.reviews!=='object'||!v.reviews||Array.isArray(v.reviews))throw Error('This file is not a compatible Niwa backup.');for(const [id,a] of Object.entries(v.answers)){if(!(lessons.lessons.some(l=>l.id===id)||lessons.passages.some(p=>`passage-${p.id}`===id)||!!practiceOf(id))||typeof a!=='object'||!a||Array.isArray(a))throw Error('This backup contains invalid responses.');for(const val of Object.values(a)){if(!['string','number','boolean'].includes(typeof val)&&val!==null)throw Error('This backup contains invalid response fields.');}}const complete=[...new Set(v.completed)];const answers=cleanReasons(v.answers,true);return {version:STATE_VERSION,showAllKanji:readShowAll(v,{strict:true}),...readKanjiWords(v,{strict:true,wordIds:kanjiIndex.words}),...readKanjiCards(v,{strict:true,wordIds:kanjiIndex.words,rules:kanjiRules}),...readKanjiChars(v,{strict:true,chars:kanjiTrack.chars,sets:kanjiSetIds()}),completed:complete,answers,...readRecallState(v,lessons,{strict:true}),...readLoopState(v,lessons,{strict:true}),...readDictionaryState(v,lessons.vocabulary,{strict:true}),...readDeckState(v,lessons.vocabulary,{strict:true,practices:practiceIds()}),...readReadingEvidence(v,lessons.vocabulary,{strict:true,practices:practiceIds()}),...readReviewState(v,lessons.vocabulary,{strict:true}),...readDailyState(v,lessons,{strict:true}),...readPatternState(v,lessons,{strict:true}),...readTransferState(v,lessons,{strict:true}),...readProgressionState({...v,completed:complete},data.path,lessons.lessons,{strict:true}),...readCheckpointState(v,lessons,data.path,{strict:true}),outcomes:ensureLedger(readLedger(v,{strict:true}).outcomes,Date.now()),...readRecoveryState(v,lessons,{strict:true})};}
+function validateBackup(raw){if(raw?.app!==profile.appTag||![1,2,STATE_VERSION].includes(raw.version))throw Error(`This file is not a compatible ${profile.name} backup.`);const v=migrateState(raw);if(!v||!Array.isArray(v.completed)||!v.completed.every(id=>lessons.lessons.some(l=>l.id===id))||typeof v.answers!=='object'||!v.answers||Array.isArray(v.answers)||typeof v.reviews!=='object'||!v.reviews||Array.isArray(v.reviews))throw Error(`This file is not a compatible ${profile.name} backup.`);for(const [id,a] of Object.entries(v.answers)){if(!(lessons.lessons.some(l=>l.id===id)||lessons.passages.some(p=>`passage-${p.id}`===id)||!!practiceOf(id))||typeof a!=='object'||!a||Array.isArray(a))throw Error('This backup contains invalid responses.');for(const val of Object.values(a)){if(!['string','number','boolean'].includes(typeof val)&&val!==null)throw Error('This backup contains invalid response fields.');}}const complete=[...new Set(v.completed)];const answers=cleanReasons(v.answers,true);return {version:STATE_VERSION,showAllKanji:readShowAll(v,{strict:true}),...readKanjiWords(v,{strict:true,wordIds:kanjiIndex.words}),...readKanjiCards(v,{strict:true,wordIds:kanjiIndex.words,rules:kanjiRules}),...readKanjiChars(v,{strict:true,chars:kanjiTrack.chars,sets:kanjiSetIds()}),completed:complete,answers,...readRecallState(v,lessons,{strict:true}),...readLoopState(v,lessons,{strict:true}),...readDictionaryState(v,lessons.vocabulary,{strict:true}),...readDeckState(v,lessons.vocabulary,{strict:true,practices:practiceIds()}),...readReadingEvidence(v,lessons.vocabulary,{strict:true,practices:practiceIds()}),...readReviewState(v,lessons.vocabulary,{strict:true}),...readDailyState(v,lessons,{strict:true}),...readPatternState(v,lessons,{strict:true}),...readTransferState(v,lessons,{strict:true}),...readProgressionState({...v,completed:complete},data.path,lessons.lessons,{strict:true}),...readCheckpointState(v,lessons,data.path,{strict:true}),outcomes:ensureLedger(readLedger(v,{strict:true}).outcomes,Date.now()),...readRecoveryState(v,lessons,{strict:true})};}
 // A practice set (#practice/<id>): a unit-shaped set from lessons.json `practices`, shown one page at a time with the
 // unit machinery (pages.mjs, unitPager): the opening (title, its home lesson's topic and length, Focus), the Words table,
 // its points and drills, and the finish page. Results live in state.answers[<id>] under unit keys; a wrong answer is
@@ -2577,5 +2608,5 @@ function registerTools(){
  for(const tool of definitions){try{Promise.resolve(ctx.registerTool(tool,{signal:lifecycle.signal})).catch(()=>{});}catch{}}
  window.addEventListener('pagehide',()=>lifecycle.abort(),{once:true});
 }
-async function start(){try{[data,lessons]=await Promise.all(['curriculum.json','lessons.json'].map(f=>fetch(f).then(r=>{if(!r.ok)throw Error();return r.json();})));if(!Array.isArray(state.completed)||!state.answers||!state.reviews)throw Error();kanjiPolicy=readKanjiPolicy(lessons);kanjiRules=rulesOf(kanjiPolicy);kanjiTrack=readKanjiCharacters(lessons);const nouns=readProperNouns(lessons);kanjiIndex=kanjiWordIndex(lessons.vocabulary,{proper:[...PROPER_NOUNS.names,...PROPER_NOUNS.places,...nouns.names,...nouns.places]});kanjiCourse=readKanjiCourse(lessons,{wordIds:kanjiIndex.words});kanjiBank=trialBank(lessons,kanjiIndex);state.completed=state.completed.filter(id=>lessons.lessons.some(l=>l.id===id));Object.assign(state,readKanjiWords(state,{wordIds:kanjiIndex.words}),readKanjiCards(state,{wordIds:kanjiIndex.words,rules:kanjiRules}),readKanjiChars(state,{chars:kanjiTrack.chars,sets:kanjiSetIds()}),readRecallState(state,lessons),readDictionaryState(state,lessons.vocabulary),readLoopState(state,lessons),readDeckState(state,lessons.vocabulary,{practices:practiceIds()}),readReadingEvidence(state,lessons.vocabulary,{practices:practiceIds()}),readReviewState(state,lessons.vocabulary),readDailyState(state,lessons),readPatternState(state,lessons),readTransferState(state,lessons),readProgressionState(state,data.path,lessons.lessons),readCheckpointState(state,lessons,data.path),{outcomes:ensureLedger(readLedger(state).outcomes,Date.now())},readRecoveryState(state,lessons));state.answers=cleanReasons(state.answers);for(const k of ['production','listening','replies','conversations',...RETIRED_STATE])delete state[k];state=syncDeckDiscovery(state);state.recovery=migrateLeeches(state,lessons,Date.now());words=indexWords(lessons.vocabulary);storageFooter();kanjiSwitch();route();registerTools();window.addEventListener('hashchange',route);window.addEventListener('popstate',route);}catch{main.innerHTML='<div class="empty">The curriculum could not load. Please reload this page. If you opened the files directly, use the preview link instead.</div>';}}
+async function start(){try{[data,lessons]=await Promise.all(['curriculum.json','lessons.json'].map(f=>fetch(f).then(r=>{if(!r.ok)throw Error();return r.json();})));if(!Array.isArray(state.completed)||!state.answers||!state.reviews)throw Error();kanjiPolicy=readKanjiPolicy(lessons);kanjiRules=rulesOf(kanjiPolicy);kanjiTrack=readKanjiCharacters(lessons);wordPacks=readWordPacks(lessons);const nouns=readProperNouns(lessons);kanjiIndex=kanjiWordIndex(lessons.vocabulary,{proper:[...PROPER_NOUNS.names,...PROPER_NOUNS.places,...nouns.names,...nouns.places]});kanjiCourse=readKanjiCourse(lessons,{wordIds:kanjiIndex.words});kanjiBank=trialBank(lessons,kanjiIndex);state.completed=state.completed.filter(id=>lessons.lessons.some(l=>l.id===id));Object.assign(state,readKanjiWords(state,{wordIds:kanjiIndex.words}),readKanjiCards(state,{wordIds:kanjiIndex.words,rules:kanjiRules}),readKanjiChars(state,{chars:kanjiTrack.chars,sets:kanjiSetIds()}),readRecallState(state,lessons),readDictionaryState(state,lessons.vocabulary),readLoopState(state,lessons),readDeckState(state,lessons.vocabulary,{practices:practiceIds()}),readReadingEvidence(state,lessons.vocabulary,{practices:practiceIds()}),readReviewState(state,lessons.vocabulary),readDailyState(state,lessons),readPatternState(state,lessons),readTransferState(state,lessons),readProgressionState(state,data.path,lessons.lessons),readCheckpointState(state,lessons,data.path),{outcomes:ensureLedger(readLedger(state).outcomes,Date.now())},readRecoveryState(state,lessons));state.answers=cleanReasons(state.answers);for(const k of ['production','listening','replies','conversations',...RETIRED_STATE])delete state[k];state=syncDeckDiscovery(state);state.recovery=migrateLeeches(state,lessons,Date.now());words=indexWords(lessons.vocabulary);storageFooter();kanjiSwitch();route();registerTools();window.addEventListener('hashchange',route);window.addEventListener('popstate',route);}catch{main.innerHTML='<div class="empty">The curriculum could not load. Please reload this page. If you opened the files directly, use the preview link instead.</div>';}}
 start();

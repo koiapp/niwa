@@ -79,9 +79,9 @@ export function topicStep(path, topicLessons, opts = {}) {
 // lessonStarted), or every prerequisite is finished and no due checkpoint stands in front of it. `checkpoint` is the due
 // checkpoint ({n, after}, checkpoints.mjs dueCheckpoint) or null: while it is due, every lesson after its boundary that
 // is neither started nor finished waits for it. {open, needs, checkpoint}: `needs` the unfinished prerequisites in path
-// order, `checkpoint` the n a lesson waits for.
-export function lessonLock(path, id, {completed = [], started = () => false, checkpoint = null} = {}) {
-  if (completed.includes(id) || started(id)) return {open: true, needs: [], checkpoint: null};
+// order, `checkpoint` the n a lesson waits for. Sensei mode (`openAll`) opens every lesson, whatever the state.
+export function lessonLock(path, id, {completed = [], started = () => false, checkpoint = null, openAll = false} = {}) {
+  if (openAll || completed.includes(id) || started(id)) return {open: true, needs: [], checkpoint: null};
   const core = path?.core || [], at = core.indexOf(id), boundary = checkpoint ? core.indexOf(checkpoint.after) : -1;
   if (at >= 0 && boundary >= 0 && at > boundary) return {open: false, needs: [], checkpoint: checkpoint.n};
   const needs = missingPrerequisites(path, id, completed);

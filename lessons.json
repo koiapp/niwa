@@ -2663,7 +2663,7 @@
                 },
                 {
                   "speaker": "キム",
-                  "ja": "3がつ（3） きました。あのう、たなかさんは ワインを （4）。"
+                  "ja": "3がつに きました。あのう、たなかさんは ワイン（3） （4）。"
                 },
                 {
                   "speaker": "たなか",
@@ -2673,7 +2673,7 @@
               "bank": [
                 "から",
                 "へ",
-                "に",
+                "を",
                 "のみますか",
                 "たべますか"
               ],
@@ -2684,7 +2684,7 @@
                 3
               ],
               "en": "Nice to meet you. I’m Kim from 102. I came from Seoul. — I’m Tanaka. When did you come to Japan? — In March. Um, do you drink wine? — Yes, I do. I like it.",
-              "explain": "から for where she came from, へ for where she came to, に after a month, and のみますか for wine."
+              "explain": "から for where she came from, へ for where she came to, を for the wine, and のみますか."
             }
           ]
         },
@@ -5479,7 +5479,7 @@
                 "か。"
               ],
               "extra": [
-                "しろ"
+                "しろく"
               ],
               "explain": "しろい, then の for the thing, then ありませんか."
             }
@@ -8735,6 +8735,13 @@
                   1,
                   3,
                   4
+                ],
+                [
+                  0,
+                  2,
+                  1,
+                  3,
+                  4
                 ]
               ],
               "explain": "どれぐらい comes just before かかりますか."
@@ -10086,6 +10093,14 @@
               "extra": [
                 "みどりがわに "
               ],
+              "accept": [
+                [
+                  1,
+                  0,
+                  2,
+                  3
+                ]
+              ],
               "explain": "The place with で comes before the thing with を."
             }
           ]
@@ -10259,6 +10274,14 @@
               ],
               "extra": [
                 "としょかんを "
+              ],
+              "accept": [
+                [
+                  0,
+                  2,
+                  1,
+                  3
+                ]
               ],
               "explain": "The place takes で, and what you study takes を."
             },
@@ -12396,13 +12419,13 @@
               "choices": [
                 "こんどの はっぴょうは としょかんで します。",
                 "こんどの はっぴょうは としょかんを します。",
-                "こんどの はっぴょうは としょかんに します。"
+                "こんどの はっぴょうは としょかんへ します。"
               ],
               "correct": 0,
               "feedback": [
                 "で marks the library as where the presentation happens.",
                 "を would make the library the thing you do.",
-                "に is not the place where an action happens."
+                "へ marks where you go; where something happens takes で."
               ]
             },
             {
@@ -18435,7 +18458,7 @@
               "correct": 0,
               "feedback": [
                 "いい is the exception: its past is よかったです.",
-                "いかったです is a slip; いい becomes よ in every form but the plain one.",
+                "いかったです is a slip: except in いい／いいです itself, いい becomes よ: よかったです.",
                 "い-adjectives never take でした."
               ]
             },
@@ -18510,6 +18533,14 @@
               ],
               "extra": [
                 "いく"
+              ],
+              "accept": [
+                [
+                  1,
+                  0,
+                  2,
+                  3
+                ]
               ],
               "explain": "いい takes よ, then くなかったです; あまり goes with the negative."
             }
@@ -19979,6 +20010,14 @@
                 "かいものに ",
                 "{行|い}く。"
               ],
+              "accept": [
+                [
+                  0,
+                  2,
+                  1,
+                  3
+                ]
+              ],
               "extra": [
                 "{行|い}きます。"
               ],
@@ -20915,7 +20954,7 @@
               "feedback": [
                 "{行|い}かない？ with a rising voice invites a friend.",
                 "{行|い}った？ asks whether your friend went already; it cannot invite.",
-                "ない with です mixes casual and polite."
+                "{行|い}かないです is polite, like {行|い}きません, and it is a statement; to invite a friend, ask {行|い}かない？"
               ]
             },
             {
@@ -22353,7 +22392,7 @@
               "correct": 0,
               "feedback": [
                 "なに？ asks a friend what it is.",
-                "なん stands only before です or a counter; alone it is なに.",
+                "なん goes before です, a counter, or sounds like の and で; on its own it is なに.",
                 "なにですか mixes the two; politely, it is なんですか."
               ]
             },
@@ -22668,7 +22707,7 @@
           "patternId": "ta-form",
           "title": "What you did, among friends: the た form",
           "pattern": "［V］た。／［V］た？ ― うん、［V］た。",
-          "explain": "Among friends, ～ました becomes the た form. Group 2 verbs swap ます for た: たべます → たべた; します → した and きます → きた. Group 1 verbs change with the sound before ます: い・ち・り → った, に・び・み → んだ, し → した, き → いた, ぎ → いだ.",
+          "explain": "Among friends, ～ました becomes the た form. Group 2 verbs swap ます for た (たべます → たべた, みます → みた); Group 3 gives します → した and きます → きた. Group 1 verbs change with the sound before ます: い・ち・り → った, に・び・み → んだ, し → した, き → いた, ぎ → いだ.",
           "examples": [
             {
               "ja": "しゅうまつ、{川|かわ}へ {行|い}った？ ― うん、{行|い}った。",
@@ -23192,6 +23231,14 @@
                 "{川|かわ}へ ",
                 "あそびに ",
                 "{行|い}った。"
+              ],
+              "accept": [
+                [
+                  0,
+                  2,
+                  1,
+                  3
+                ]
               ],
               "extra": [
                 "{行|い}いた。"
@@ -24258,7 +24305,7 @@
               "feedback": [
                 "{休|やす}み is a noun: its past is {休|やす}みだった.",
                 "かった belongs to い-adjectives, not nouns.",
-                "うん says yes to the job, then the rest says no."
+                "うん、{休|やす}みじゃ なかった says you worked, but you had the day off."
               ]
             },
             {
@@ -26953,13 +27000,13 @@
               "en": "Ms Aoki, may I speak in English?",
               "choices": [
                 "で",
-                "を",
+                "に",
                 "と"
               ],
               "correct": 0,
               "feedback": [
                 "で marks the language you speak in.",
-                "を would make English the thing you talk about.",
+                "に marks where something goes, not the language you speak in.",
                 "と marks the person you talk with."
               ]
             },
@@ -30334,13 +30381,13 @@
               "choices": [
                 "まじめで",
                 "まじめくて",
-                "まじめな"
+                "まじめだ"
               ],
               "correct": 0,
               "feedback": [
                 "まじめ is a な-adjective, so it adds で.",
                 "くて is for い-adjectives.",
-                "まじめな goes before a noun, not before another adjective."
+                "だ ends a sentence; to join two qualities before {人|ひと}, use まじめで."
               ]
             },
             {
@@ -32135,11 +32182,11 @@
           "en": "We hope you’ll be very happy."
         }
       ],
-      "question": "A neighbour gives you a box of sweets for your birthday. What do you say as you take it?",
+      "question": "A neighbour gives you a picture frame for your birthday. What do you say as you take it?",
       "choices": [
         "ありがとうございます。たいせつに します。",
         "おめでとうございます。おしあわせに。",
-        "おかしは どうですか。"
+        "しゃしんたては どうですか。"
       ],
       "correct": 0,
       "feedback": [
@@ -32600,7 +32647,7 @@
               "feedback": [
                 "{大学|だいがく} reads だいがく.",
                 "おお is how {大|おお} reads in {大|おお}きい, not here.",
-                "{大|だい} here is voiced: だい, not たい."
+                "たい is another reading of {大|たい}; in {大学|だいがく} it reads だい."
               ]
             },
             {
@@ -32733,6 +32780,20 @@
                   0,
                   2,
                   3,
+                  4
+                ],
+                [
+                  0,
+                  1,
+                  3,
+                  2,
+                  4
+                ],
+                [
+                  1,
+                  0,
+                  3,
+                  2,
                   4
                 ]
               ],
@@ -36243,6 +36304,15 @@
                 "ドアを ",
                 "あけます。"
               ],
+              "accept": [
+                [
+                  1,
+                  0,
+                  2,
+                  3,
+                  4
+                ]
+              ],
               "extra": [
                 "まわします、"
               ],
@@ -38579,6 +38649,14 @@
                 "わたして ",
                 "くれない？"
               ],
+              "accept": [
+                [
+                  1,
+                  0,
+                  2,
+                  3
+                ]
+              ],
               "extra": [
                 "わたす "
               ],
@@ -40905,6 +40983,22 @@
               "extra": [
                 "つかいたら、"
               ],
+              "accept": [
+                [
+                  1,
+                  0,
+                  2,
+                  3,
+                  4
+                ],
+                [
+                  1,
+                  2,
+                  0,
+                  3,
+                  4
+                ]
+              ],
               "explain": "つかった, then ら; after it comes what to do next: もどして ください."
             }
           ]
@@ -41763,13 +41857,13 @@
               "en": "Shall we play football on Saturday? — Saturday’s a bit difficult… Sunday would be fine.",
               "choices": [
                 "なら",
-                "から",
+                "に",
                 "まで"
               ],
               "correct": 0,
               "feedback": [
                 "{日|にち}よう{日|び}なら offers Sunday instead.",
-                "から is “from”; it does not offer another day.",
+                "に marks when something happens; it does not offer another day.",
                 "まで is “until”; it does not offer another day."
               ]
             },
@@ -43094,7 +43188,7 @@
               "feedback": [
                 "The volitional はたらこう before と {思|おも}って います gives your plan.",
                 "～ましょう does not go before と {思|おも}って います.",
-                "はたらく と {思|おも}います guesses about someone; it is not your plan."
+                "はたらくと {思|おも}って います says what you expect to happen, not a plan you made; a plan takes はたらこう."
               ]
             },
             {
@@ -43133,6 +43227,14 @@
               ],
               "extra": [
                 "{買|か}いましょうと "
+              ],
+              "accept": [
+                [
+                  1,
+                  0,
+                  2,
+                  3
+                ]
               ],
               "explain": "The volitional {買|か}おう, then と {思|おも}って います."
             }
@@ -44775,7 +44877,7 @@
                   "ja": "うんどうします → （4）"
                 },
                 {
-                  "ja": "きます → （5）"
+                  "ja": "{来|き}ます → （5）"
                 }
               ],
               "bank": [
@@ -45847,13 +45949,13 @@
               "choices": [
                 "が",
                 "を",
-                "で"
+                "に"
               ],
               "correct": 0,
               "feedback": [
                 "The place you recommend takes が before いいです.",
                 "を marks what you act on; いいです takes が.",
-                "で would make it the place where something happens."
+                "に does not mark what you recommend; いいです takes が."
               ]
             }
           ]
@@ -48105,6 +48207,13 @@
               "extra": [
                 "こわしじゃった。"
               ],
+              "accept": [
+                [
+                  1,
+                  2,
+                  0
+                ]
+              ],
               "explain": "こわして ends in て, so it becomes こわしちゃった."
             }
           ]
@@ -48248,7 +48357,7 @@
                 "ください。"
               ],
               "extra": [
-                "{見|み}て "
+                "{見|み}るながら "
               ],
               "explain": "The side action takes ながら; the main action, walking, comes last."
             }
@@ -53307,7 +53416,7 @@
             "correct": 0,
             "feedback": [
               "Correct. Bus, train, on foot, motorbike or taxi, then Kyoto on Saturday.",
-              "Tan comes to school by train; nobody goes to Kyoto with Lama.",
+              "Tan comes to school by train; the note never says he is going to Kyoto with Lama.",
               "The note says it is snowing, not how Marie feels about it."
             ]
           },
@@ -61232,7 +61341,7 @@
             "id": "bk07p1-i3",
             "kind": "idea",
             "units": [
-              "bk07p1-u2"
+              "bk07p1-u1"
             ],
             "question": "Lama will play golf at noon.",
             "choices": [
@@ -62363,7 +62472,7 @@
           },
           {
             "id": "bk07p3-u3",
-            "text": "Most of the friends from abroad are from Korea.",
+            "text": "More of the friends are from Korea than from China.",
             "critical": true,
             "evidence": [
               {
@@ -62525,14 +62634,14 @@
             ],
             "question": "Which summary fits?",
             "choices": [
-              "Of 600 students, half have friends from abroad, most often from Korea, and most want them.",
+              "Of 600 students, half have friends from abroad, more from Korea than from China, and most want them.",
               "Most students have friends from China and don’t want more.",
               "The survey asked students abroad about Japan."
             ],
             "correct": 0,
             "feedback": [
               "Correct. The three questions and their answers.",
-              "Korea is first, and most want friends from abroad.",
+              "Korea is ahead of China, and most want friends from abroad.",
               "It asked students in Japan about friends from abroad."
             ]
           },
@@ -63194,7 +63303,7 @@
             "units": [
               "bk08p1-u2"
             ],
-            "question": "Tan’s friends caught some fish.",
+            "question": "Tan went to the river in the morning.",
             "choices": [
               "The passage says this.",
               "The passage says the opposite.",
@@ -63202,9 +63311,9 @@
             ],
             "correct": 2,
             "feedback": [
-              "The passage does not state this. Tan says only that there were no fish; he says nothing about his friends catching any.",
-              "Nothing in the passage conflicts with this. Tan says only that there were no fish; he says nothing about his friends catching any.",
-              "Correct. Tan says only that there were no fish; he says nothing about his friends catching any."
+              "The passage does not state this. Tan never says what time they went.",
+              "Nothing in the passage conflicts with this. Tan never says what time they went.",
+              "Correct. Tan never says what time they went."
             ]
           },
           {
@@ -66637,8 +66746,8 @@
             "recovery": [
               {
                 "id": "bk10p1-h3-r1",
-                "ja": "いのうえさん、わたしの どうりょうです。こんど しょうかいします。",
-                "en": "Mr Inoue, he’s my coworker. I’ll introduce him some time."
+                "ja": "いのうえさんは わたしの どうりょうです。こんど しょうかいします。",
+                "en": "Mr Inoue is my coworker. I’ll introduce you some time."
               },
               {
                 "id": "bk10p1-h3-r2",
@@ -70380,7 +70489,7 @@
             "units": [
               "bk12p1-u6"
             ],
-            "question": "Sara forgot to write the reason.",
+            "question": "Sara’s form has her seal on it.",
             "choices": [
               "The passage says this.",
               "The passage says the opposite.",
@@ -70388,9 +70497,9 @@
             ],
             "correct": 1,
             "feedback": [
-              "The passage does not state this. What is missing is her seal: はんこが ありませんよ.",
-              "Correct. What is missing is her seal: はんこが ありませんよ.",
-              "The passage does address this. What is missing is her seal: はんこが ありませんよ."
+              "The passage does not state this. はんこが ありませんよ: the seal is missing.",
+              "Correct. はんこが ありませんよ: the seal is missing.",
+              "The passage does address this. はんこが ありませんよ: the seal is missing."
             ]
           },
           {
@@ -71718,7 +71827,7 @@
             ],
             "question": "Why does Marie say ひどい！?",
             "choices": [
-              "Lama forgot her eraser again.",
+              "Lama forgot to bring her eraser back.",
               "Lama lost her money.",
               "Lama did not answer."
             ],
@@ -73707,8 +73816,8 @@
               },
               {
                 "id": "bk13p2-h3-r2",
-                "ja": "ビールか おちゃ、どちらが いいですか。ビールなら ありますよ。",
-                "en": "Beer or tea, which would you like? There’s beer, if you like."
+                "ja": "ビールか おちゃ、どちらが いいですか。― ビールが いいです。",
+                "en": "Beer or tea, which would you like? — Beer, please."
               }
             ]
           }
@@ -74788,7 +74897,7 @@
             "correct": 0,
             "feedback": [
               "Correct. あたたかい ものを {飲|の}んだ ほうが いいですよ.",
-              "Cold drinks are what she is warned off in the office, not here.",
+              "Mr Inoue says あたたかい もの, something warm, not something cold.",
               "Coffee is not mentioned."
             ]
           },
@@ -75513,7 +75622,7 @@
             "units": [
               "bk14p2-u6"
             ],
-            "question": "Lama must be at the station by ten.",
+            "question": "Kim tells Lama to come to the station at ten.",
             "choices": [
               "The passage says this.",
               "The passage says the opposite.",
@@ -75521,9 +75630,9 @@
             ],
             "correct": 1,
             "feedback": [
-              "The passage does not state this. {朝|あさ} 9{時|じ}に えきに {来|く}れば: nine.",
-              "Correct. {朝|あさ} 9{時|じ}に えきに {来|く}れば: nine.",
-              "The passage does address this. {朝|あさ} 9{時|じ}に えきに {来|く}れば: nine."
+              "The passage does not state this. {朝|あさ} 9{時|じ}に えきに {来|く}れば: nine, not ten.",
+              "Correct. {朝|あさ} 9{時|じ}に えきに {来|く}れば: nine, not ten.",
+              "The passage does address this. {朝|あさ} 9{時|じ}に えきに {来|く}れば: nine, not ten."
             ]
           },
           {
@@ -75649,8 +75758,8 @@
               },
               {
                 "id": "bk14p2-h3-r2",
-                "ja": "バスが ないから、えきに {来|く}れば、まにあうよ。",
-                "en": "There’s no bus, so if you come to the station you’ll be in time."
+                "ja": "8{時|じ}に えきに {来|く}れば、まにあうよ。",
+                "en": "If you come to the station at eight, you’ll be in time."
               }
             ]
           }
@@ -80130,7 +80239,7 @@
       "example": "いろは くろです。",
       "pack": "core",
       "pos": "noun / adjective",
-      "definition": "The colour black. Before a noun, or after は with です, use the adjective くろい.",
+      "definition": "The colour black. Before a noun, use the adjective くろい: くろい かばん. To name the colour itself, use くろ: いろは くろです.",
       "provenance": "Niwa original entry · draft — fluent-speaker review pending"
     },
     {
@@ -80141,7 +80250,7 @@
       "example": "いろは しろです。",
       "pack": "core",
       "pos": "noun / adjective",
-      "definition": "The colour white. Before a noun, or after は with です, use the adjective しろい.",
+      "definition": "The colour white. Before a noun, use the adjective しろい: しろい かばん. To name the colour itself, use しろ: いろは しろです.",
       "provenance": "Niwa original entry · draft — fluent-speaker review pending"
     },
     {
@@ -80152,7 +80261,7 @@
       "example": "あかい セーターは ありますか。",
       "pack": "core",
       "pos": "noun / adjective",
-      "definition": "The colour red. Before a noun, or after は with です, use the adjective あかい.",
+      "definition": "The colour red. Before a noun, use the adjective あかい: あかい かばん. To name the colour itself, use あか: いろは あかです.",
       "forms": [
         {
           "id": "adj",
@@ -80170,7 +80279,7 @@
       "example": "ちゃいろい くつは いくらですか。",
       "pack": "core",
       "pos": "noun / adjective",
-      "definition": "The colour brown. Before a noun, or after は with です, use the adjective ちゃいろい.",
+      "definition": "The colour brown. Before a noun, use the adjective ちゃいろい: ちゃいろい かばん. To name the colour itself, use ちゃいろ: いろは ちゃいろです.",
       "forms": [
         {
           "id": "adj",
@@ -80188,7 +80297,7 @@
       "example": "きいろい かさを ください。",
       "pack": "core",
       "pos": "noun / adjective",
-      "definition": "The colour yellow. Before a noun, or after は with です, use the adjective きいろい.",
+      "definition": "The colour yellow. Before a noun, use the adjective きいろい: きいろい かばん. To name the colour itself, use きいろ: いろは きいろです.",
       "forms": [
         {
           "id": "adj",
@@ -80206,7 +80315,7 @@
       "example": "あおい シャツは ありますか。",
       "pack": "core",
       "pos": "noun / adjective",
-      "definition": "The colour blue. Before a noun, or after は with です, use the adjective あおい.",
+      "definition": "The colour blue. Before a noun, use the adjective あおい: あおい かばん. To name the colour itself, use あお: いろは あおです.",
       "forms": [
         {
           "id": "adj",
@@ -82188,7 +82297,7 @@
       "example": "わたしは よく えを かきます。",
       "pack": "core",
       "pos": "verb",
-      "definition": "To draw or paint a picture: えを かきます. Written the same as かきます, “write”.",
+      "definition": "To draw or paint a picture: えを かきます. It sounds the same as かきます, “write”, and looks the same in kana.",
       "forms": [
         {
           "id": "negative",
@@ -82316,7 +82425,7 @@
       "example": "ギョーザの かわを つくります。",
       "pack": "core",
       "pos": "noun",
-      "definition": "The skin or wrapper of something: ギョーザの かわ is a dumpling wrapper. Written the same as かわ, “river”.",
+      "definition": "The skin or wrapper of something: ギョーザの かわ is a dumpling wrapper. It sounds the same as かわ, “river”, and looks the same in kana.",
       "provenance": "Niwa original entry · draft — fluent-speaker review pending"
     },
     {
@@ -89330,7 +89439,7 @@
         {
           "id": "spaced",
           "form": "かぜを ひきます",
-          "label": "spaced"
+          "label": "with word spacing"
         },
         {
           "id": "past",
@@ -97123,7 +97232,7 @@
         {
           "id": "spaced",
           "form": "また こんど",
-          "label": "spaced"
+          "label": "with word spacing"
         }
       ],
       "provenance": "Niwa original entry · draft — fluent-speaker review pending"
@@ -98108,6 +98217,12 @@
       "まわ"
     ]
   },
+  "vocabularyPacks": [
+    {
+      "id": "core",
+      "label": "Core words"
+    }
+  ],
   "patterns": [
     {
       "id": "wa-desu",
@@ -99065,7 +99180,7 @@
     },
     {
       "id": "plain-noun-modifier",
-      "title": "Saying which one with any plain-form sentence before a noun (past, negative or ～て いる; ～て いる ［N］ alone is te-iru-noun)",
+      "title": "Saying which one with any plain-form sentence before a noun (past, negative or ～て いる)",
       "contrast": {
         "ja": "きのう {買|か}いました かさです。",
         "en": "(A mistake for “It’s the umbrella I bought yesterday.”)",
@@ -100484,7 +100599,7 @@
         "correct": 0,
         "feedback": [
           "なんですか asks what the dish is.",
-          "に しますか asks someone what they will choose."
+          "に しますか asks whether someone will have it; it does not ask what a dish is."
         ]
       },
       {
@@ -100638,7 +100753,7 @@
         ],
         "format": "blank",
         "ja": "えきは ちかいですか。― いいえ、ちか（　）。",
-        "en": "Outside a station, a tourist asks you: Is the station near? — No, it isn’t near.",
+        "en": "At a bus stop, a tourist asks you: Is the station near? — No, it isn’t near.",
         "choices": [
           "くないです",
           "いです"
@@ -101246,6 +101361,13 @@
           "しゅくだいを ",
           "した。"
         ],
+        "accept": [
+          [
+            1,
+            0,
+            2
+          ]
+        ],
         "extra": [
           "しった。"
         ],
@@ -101420,6 +101542,14 @@
         ],
         "extra": [
           "のみて "
+        ],
+        "accept": [
+          [
+            1,
+            0,
+            2,
+            3
+          ]
         ],
         "explain": "のみます → のんで, then ください."
       },
@@ -102036,6 +102166,15 @@
         "extra": [
           "ひっこします "
         ],
+        "accept": [
+          [
+            0,
+            1,
+            3,
+            2,
+            4
+          ]
+        ],
         "explain": "The た form before とき, then what happened then."
       },
       {
@@ -102434,6 +102573,14 @@
           "はいて ",
           "みて ください。"
         ],
+        "accept": [
+          [
+            1,
+            0,
+            2,
+            3
+          ]
+        ],
         "extra": [
           "はき "
         ],
@@ -102641,8 +102788,8 @@
         ],
         "correct": 0,
         "feedback": [
-          "{見|み}ませんか invites Tan to go with you.",
-          "{見|み}ますか asks whether he watches films; “won’t you …?” is {見|み}ませんか."
+          "{見|み}ませんか invites your classmate to go with you.",
+          "{見|み}ますか asks whether your classmate watches films; “won’t you …?” is {見|み}ませんか."
         ]
       },
       {
@@ -102741,12 +102888,12 @@
         "en": "After class, a classmate asks you to study together tomorrow. Tomorrow is difficult, but the day after is fine.",
         "choices": [
           "なら",
-          "から"
+          "に"
         ],
         "correct": 0,
         "feedback": [
           "あさってなら offers the day after instead.",
-          "から is “from”; it does not offer another day."
+          "あさって takes no に here, and に does not offer another day."
         ]
       },
       {
@@ -103960,6 +104107,14 @@
                 "extra": [
                   "けしって "
                 ],
+                "accept": [
+                  [
+                    1,
+                    0,
+                    2,
+                    3
+                  ]
+                ],
                 "explain": "まちがえて comes first; けします → けして, then しまいました."
               }
             ]
@@ -104115,6 +104270,14 @@
                 ],
                 "extra": [
                   "でんしゃを "
+                ],
+                "accept": [
+                  [
+                    1,
+                    0,
+                    2,
+                    3
+                  ]
                 ],
                 "explain": "The place you left it takes に, the umbrella を, then わすれて しまいました."
               }
@@ -104976,7 +105139,14 @@
                 "extra": [
                   "いたく "
                 ],
-                "explain": "Say the problem first: さいきん, then こしが いたいです."
+                "accept": [
+                  [
+                    1,
+                    0,
+                    2
+                  ]
+                ],
+                "explain": "さいきん says since when; the problem is こしが いたいです."
               },
               {
                 "id": "advice-for-a-classmate-D2",
@@ -104990,6 +105160,14 @@
                 ],
                 "extra": [
                   "{行|い}くら "
+                ],
+                "accept": [
+                  [
+                    1,
+                    0,
+                    2,
+                    3
+                  ]
                 ],
                 "explain": "The suggestion: {行|い}った + ら, then どうですか."
               }
@@ -105664,6 +105842,14 @@
                   "しょるいを ",
                   "よごして しまいました。"
                 ],
+                "accept": [
+                  [
+                    0,
+                    2,
+                    1,
+                    3
+                  ]
+                ],
                 "explain": "The apology first, then what happened."
               },
               {
@@ -105679,7 +105865,15 @@
                 "extra": [
                   "おしえじゃった。"
                 ],
-                "explain": "ごめん, then what you got wrong with ～ちゃった."
+                "accept": [
+                  [
+                    1,
+                    2,
+                    3,
+                    0
+                  ]
+                ],
+                "explain": "What you got wrong with ～ちゃった, and ごめん first or last."
               },
               {
                 "id": "after-a-mistake-C3",
@@ -110029,14 +110223,14 @@
                 "en": "It was expensive, so I didn’t buy it.",
                 "choices": [
                   "ので",
-                  "でので",
-                  "ですので"
+                  "なので",
+                  "でしたので"
                 ],
                 "correct": 0,
                 "feedback": [
                   "ので follows the plain past: {高|たか}かったので.",
-                  "で does not go before ので.",
-                  "です cannot follow {高|たか}かった."
+                  "な is for な-adjectives and nouns; an い-adjective takes ので straight after.",
+                  "でした follows a noun or a な-adjective, not an い-adjective."
                 ]
               },
               {
@@ -110234,7 +110428,7 @@
                   1,
                   2
                 ],
-                "en": "Mr Nakamura, excuse me. — Ah, Sara. What’s wrong? — I’ve had a temperature since this morning. May I go home early today? — Yes, of course. Take care of yourself.",
+                "en": "Ms Nakamura, excuse me. — Ah, Sara. What’s wrong? — I’ve had a temperature since this morning. May I go home early today? — Yes, of course. Take care of yourself.",
                 "explain": "どうしたんですか asks, ～んです explains, and ～ても いいですか asks permission."
               },
               {
@@ -110281,7 +110475,7 @@
                   "いいですか。"
                 ],
                 "extra": [
-                  "けっせきして "
+                  "けっせきしないで "
                 ],
                 "explain": "The reason with ので, then けっせきしても いいですか asks permission."
               },
@@ -113308,7 +113502,7 @@
               {
                 "id": "casual-weekend-plans-E3",
                 "patternId": "dictionary-form",
-                "prompt": "Kim asks casually: タンさんも くる？ Which polite question means the same?",
+                "prompt": "Kim asks a classmate casually whether Tan is coming too: タンさんも くる？ Which polite question asks the same thing?",
                 "choices": [
                   "タンさんも きますか。",
                   "タンさんも きましたか。",
@@ -113318,7 +113512,7 @@
                 "feedback": [
                   "くる is the dictionary form of きます: きますか.",
                   "きましたか asks about the past.",
-                  "きませんか invites Tan to come."
+                  "きませんか invites Tan himself; here Kim asks someone else whether he is coming."
                 ]
               }
             ]
@@ -113338,6 +113532,15 @@
                   "はなびを ",
                   "{見|み}に ",
                   "{行|い}く？"
+                ],
+                "accept": [
+                  [
+                    0,
+                    2,
+                    1,
+                    3,
+                    4
+                  ]
                 ],
                 "extra": [
                   "{行|い}きますか。"
@@ -114102,13 +114305,13 @@
             "kind": "practice",
             "id": "colours-and-adjectives-K",
             "format": "sort",
-            "instruction": "Sort each colour: before a noun, does it take い or の?",
+            "instruction": "Sort each colour: does it have an い-adjective?",
             "items": [
               {
                 "id": "colours-and-adjectives-K1",
                 "groups": [
-                  "［colour］い ［N］",
-                  "［colour］の ［N］"
+                  "has an い-adjective (あかい)",
+                  "no い-adjective: only ～の"
                 ],
                 "cards": [
                   [
@@ -114128,7 +114331,7 @@
                     1
                   ]
                 ],
-                "explain": "あか and きいろ have the adjectives あかい and きいろい; みどり and ピンク join a noun with の."
+                "explain": "あか and きいろ have あかい and きいろい; みどり and ピンク only join with の."
               }
             ]
           },
@@ -117684,6 +117887,15 @@
                 "extra": [
                   "のる "
                 ],
+                "accept": [
+                  [
+                    1,
+                    0,
+                    2,
+                    3,
+                    4
+                  ]
+                ],
                 "explain": "のった, the た form, then ことが あります."
               }
             ]
@@ -118661,6 +118873,15 @@
                 "extra": [
                   "{高校|こうこう}に "
                 ],
+                "accept": [
+                  [
+                    0,
+                    2,
+                    1,
+                    3,
+                    4
+                  ]
+                ],
                 "explain": "The workplace takes で, the subject takes を, then おしえて います."
               }
             ]
@@ -119336,7 +119557,7 @@
                   "はたらいて",
                   "まじめで",
                   "{住|す}みて",
-                  "まじめな"
+                  "まじめくて"
                 ],
                 "answers": [
                   0,
@@ -120111,7 +120332,7 @@
                 "prompt": "It is 9:00 and you are at the departure board. A traveller asks: しながわゆきは なんばんせんですか。 What do you answer?",
                 "card": [
                   "1ばんせん　しながわゆき　9じ5ふん",
-                  "2ばんせん　いけぶくろゆき　9じ8ふん",
+                  "2ばんせん　いけぶくろゆき　9じ8ぷん",
                   "1ばんせん　しながわゆき　9じ20ぷん"
                 ],
                 "choices": [
@@ -122062,6 +122283,14 @@
                 "extra": [
                   "するんです。"
                 ],
+                "accept": [
+                  [
+                    0,
+                    2,
+                    1,
+                    3
+                  ]
+                ],
                 "explain": "A fever you have takes あります, so あるんです; から says since when."
               },
               {
@@ -123879,7 +124108,7 @@
               },
               {
                 "id": "forms-tickets-and-how-tos-D3",
-                "prompt": "At the copier, Mr Nakamura says: うえが でんげん、したが スタートです。 You want to start copying. Which button do you press?",
+                "prompt": "At the copier, Ms Nakamura says: うえが でんげん、したが スタートです。 You want to start copying. Which button do you press?",
                 "choices": [
                   "The lower one",
                   "The upper one",
@@ -124110,6 +124339,16 @@
                   "はんこを ",
                   "おして ください。"
                 ],
+                "accept": [
+                  [
+                    1,
+                    0,
+                    2,
+                    3,
+                    4,
+                    5
+                  ]
+                ],
                 "extra": [
                   "{書|か}きます、"
                 ],
@@ -124311,6 +124550,17 @@
                   "{入|い}れて、",
                   "ボタンを ",
                   "おします。"
+                ],
+                "accept": [
+                  [
+                    1,
+                    0,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                  ]
                 ],
                 "extra": [
                   "えらびます、"
@@ -124958,6 +125208,14 @@
                 "extra": [
                   "おしえました。"
                 ],
+                "accept": [
+                  [
+                    0,
+                    2,
+                    1,
+                    3
+                  ]
+                ],
                 "explain": "The teacher takes に, and ならいました says you learned."
               },
               {
@@ -124971,6 +125229,14 @@
                 ],
                 "extra": [
                   "かりました。"
+                ],
+                "accept": [
+                  [
+                    0,
+                    2,
+                    1,
+                    3
+                  ]
                 ],
                 "explain": "Kim has は and lends it: かしました."
               }
@@ -125539,7 +125805,7 @@
                   "{来|き}た",
                   "もらいました",
                   "{来|き}ました",
-                  "あげました"
+                  "ならいました"
                 ],
                 "answers": [
                   0,
@@ -126189,6 +126455,13 @@
                 ],
                 "extra": [
                   "いなかを "
+                ],
+                "accept": [
+                  [
+                    1,
+                    0,
+                    2
+                  ]
                 ],
                 "explain": "The holiday with に says when, and the place takes へ before かえります."
               }
@@ -127147,6 +127420,12 @@
                     2,
                     1,
                     3
+                  ],
+                  [
+                    1,
+                    0,
+                    2,
+                    3
                   ]
                 ],
                 "explain": "The person with は, when and where, then きました."
@@ -127573,6 +127852,12 @@
                     0,
                     2,
                     1,
+                    3
+                  ],
+                  [
+                    1,
+                    0,
+                    2,
                     3
                   ]
                 ],
@@ -128643,9 +128928,9 @@
                 ],
                 "before": "じゃあ、",
                 "after": "。",
-                "star": 0,
+                "star": 3,
                 "en": "Well then, where shall we have cake?",
-                "explain": "The place question どこで comes first, then the cake and ～ましょうか."
+                "explain": "ましょうか ends the suggestion; どこで and ケーキを come before たべ."
               },
               {
                 "id": "invite-and-plan-G2",
@@ -130701,6 +130986,14 @@
                 ],
                 "extra": [
                   "{書|か}きば、"
+                ],
+                "accept": [
+                  [
+                    1,
+                    0,
+                    2,
+                    3
+                  ]
                 ],
                 "explain": "{書|か}きます moves to the え-row: {書|か}けば, then the result."
               }
@@ -132853,7 +133146,15 @@
                 "extra": [
                   "とめては "
                 ],
-                "explain": "The place, the bicycle, then とめても いいですか."
+                "accept": [
+                  [
+                    1,
+                    0,
+                    2,
+                    3
+                  ]
+                ],
+                "explain": "The place and the bicycle, in either order, then とめても いいですか."
               },
               {
                 "id": "may-i-test-rules-E2",
@@ -132865,7 +133166,7 @@
                   "ください。"
                 ],
                 "extra": [
-                  "{日本語|にほんご}を "
+                  "{日本語|にほんご}に "
                 ],
                 "explain": "The language takes で."
               }
@@ -133734,6 +134035,14 @@
                 ],
                 "extra": [
                   "6じで "
+                ],
+                "accept": [
+                  [
+                    1,
+                    0,
+                    2,
+                    3
+                  ]
                 ],
                 "explain": "The person with は, the time with に, then the verb."
               },
@@ -136314,13 +136623,13 @@
                     "ja": "これは わたし（1） かさです。"
                   },
                   {
-                    "ja": "キムさんは かんこく（2） {来|き}ました。"
+                    "ja": "キムさんは かんこく（2） {日本|にほん}へ {来|き}ました。"
                   },
                   {
                     "ja": "デパートで くつ（3） かいました。"
                   },
                   {
-                    "ja": "らいげつ おおさか（4） {行|い}きます。"
+                    "ja": "らいげつ とうきょうから おおさか（4） {行|い}きます。"
                   },
                   {
                     "ja": "バス（5） {会社|かいしゃ}へ {行|い}きます。"
@@ -136402,6 +136711,15 @@
                 ],
                 "extra": [
                   "{見|み}て "
+                ],
+                "accept": [
+                  [
+                    0,
+                    2,
+                    1,
+                    3,
+                    4
+                  ]
                 ],
                 "explain": "The person with に, the textbook with を, then {見|み}せて あげて ください."
               },
@@ -137423,7 +137741,7 @@
                 "lines": [
                   {
                     "speaker": "キム",
-                    "ja": "タンさん、（1）に しますか。"
+                    "ja": "タンさん、（1） しますか。"
                   },
                   {
                     "speaker": "タン",
@@ -137443,7 +137761,7 @@
                   }
                 ],
                 "bank": [
-                  "なに",
+                  "なにに",
                   "なん",
                   "に",
                   "それと",
@@ -142693,6 +143011,20 @@
                 "extra": [
                   "みどりせんへ "
                 ],
+                "accept": [
+                  [
+                    0,
+                    2,
+                    1,
+                    3
+                  ],
+                  [
+                    2,
+                    0,
+                    1,
+                    3
+                  ]
+                ],
                 "explain": "The start with から, the end with まで, the line with で."
               },
               {
@@ -144086,6 +144418,14 @@
                 "extra": [
                   "{行|い}きたいです。"
                 ],
+                "accept": [
+                  [
+                    1,
+                    0,
+                    2,
+                    3
+                  ]
+                ],
                 "explain": "When, where, then {行|い}きました for a trip that is over."
               },
               {
@@ -144746,6 +145086,15 @@
                 "extra": [
                   "を "
                 ],
+                "accept": [
+                  [
+                    1,
+                    0,
+                    2,
+                    3,
+                    4
+                  ]
+                ],
                 "explain": "Where first, then the thing with は, the amount with で, and the price with ぐらい."
               },
               {
@@ -144757,6 +145106,15 @@
                   "たまごは ",
                   "10こで ",
                   "300えんぐらいです。"
+                ],
+                "accept": [
+                  [
+                    2,
+                    0,
+                    1,
+                    3,
+                    4
+                  ]
                 ],
                 "explain": "Kim’s country with の, then くにで and the rest of the price."
               }
@@ -145042,6 +145400,14 @@
                 "extra": [
                   "を "
                 ],
+                "accept": [
+                  [
+                    1,
+                    0,
+                    2,
+                    3
+                  ]
+                ],
                 "explain": "The country with で, the thing with は, then the number, the money and ぐらい."
               }
             ]
@@ -145167,6 +145533,15 @@
                 ],
                 "extra": [
                   "を "
+                ],
+                "accept": [
+                  [
+                    0,
+                    2,
+                    1,
+                    3,
+                    4
+                  ]
                 ],
                 "explain": "みなさん speaks to the group, then where, the thing with は, and the litre with で."
               }
@@ -145783,7 +146158,7 @@
                 "extra": [
                   "{子|こ}どもを "
                 ],
-                "explain": "げんきで joins the first quality; what she likes takes が."
+                "explain": "げんきで joins the first quality; what he likes takes が."
               }
             ]
           },
@@ -146092,6 +146467,12 @@
                     0,
                     2,
                     1,
+                    3
+                  ],
+                  [
+                    1,
+                    0,
+                    2,
                     3
                   ]
                 ],
@@ -146774,6 +147155,14 @@
                 "extra": [
                   "8じまで "
                 ],
+                "accept": [
+                  [
+                    2,
+                    0,
+                    1,
+                    3
+                  ]
+                ],
                 "explain": "The day, the deadline with までに, the rubbish, then すてて ください."
               },
               {
@@ -146788,6 +147177,14 @@
                 ],
                 "extra": [
                   "おいて "
+                ],
+                "accept": [
+                  [
+                    1,
+                    0,
+                    2,
+                    3
+                  ]
                 ],
                 "explain": "おきます → おかない, then で ください."
               }
@@ -150063,7 +150460,16 @@
                 "extra": [
                   "とめても "
                 ],
-                "explain": "Name the sign, then the rule: ここに {車|くるま}を とめては いけません."
+                "accept": [
+                  [
+                    0,
+                    2,
+                    1,
+                    3,
+                    4
+                  ]
+                ],
+                "explain": "Name the sign, then the rule: ここに {車|くるま}を とめては いけません (the place and the car can come in either order)."
               }
             ]
           },
@@ -150842,6 +151248,14 @@
                 ],
                 "extra": [
                   "わすれじゃった。"
+                ],
+                "accept": [
+                  [
+                    1,
+                    2,
+                    3,
+                    0
+                  ]
                 ],
                 "explain": "わすれて ends in て: わすれちゃった."
               },
@@ -151784,7 +152198,7 @@
                 "correct": 0,
                 "feedback": [
                   "よんで います: she is reading it right now.",
-                  "よみます is what he does, not what he is doing now.",
+                  "よみます is what she does, not what he is doing now.",
                   "よんで ください asks someone to read it."
                 ]
               },
@@ -151871,6 +152285,14 @@
                 "extra": [
                   "まちて "
                 ],
+                "accept": [
+                  [
+                    1,
+                    0,
+                    2,
+                    3
+                  ]
+                ],
                 "explain": "The place with で, then まって います."
               },
               {
@@ -151885,6 +152307,14 @@
                 ],
                 "extra": [
                   "まだ "
+                ],
+                "accept": [
+                  [
+                    1,
+                    0,
+                    2,
+                    3
+                  ]
                 ],
                 "explain": "もう: it is time; then やめて ください."
               }
@@ -152149,6 +152579,16 @@
                 "extra": [
                   "へやに "
                 ],
+                "accept": [
+                  [
+                    1,
+                    0,
+                    2,
+                    3,
+                    4,
+                    5
+                  ]
+                ],
                 "explain": "The place where he is doing it takes で, then ギターを ひいて います."
               }
             ]
@@ -152391,6 +152831,16 @@
                 ],
                 "extra": [
                   "{話|はな}しって "
+                ],
+                "accept": [
+                  [
+                    0,
+                    2,
+                    1,
+                    3,
+                    4,
+                    5
+                  ]
                 ],
                 "explain": "すみません first, then the person, いま, who she is talking with, and {話|はな}して います."
               }
@@ -154174,6 +154624,17 @@
                 "extra": [
                   "つれて いきて "
                 ],
+                "accept": [
+                  [
+                    0,
+                    1,
+                    2,
+                    4,
+                    3,
+                    5,
+                    6
+                  ]
+                ],
                 "explain": "{来|き}た とき, then the person with に and つれて いって もらいました."
               },
               {
@@ -154714,7 +155175,7 @@
                 "bank": [
                   "なおして",
                   "おしえて",
-                  "かえる",
+                  "かえります",
                   "なおって",
                   "かえった"
                 ],
@@ -155188,6 +155649,15 @@
                 "extra": [
                   "3ぼん "
                 ],
+                "accept": [
+                  [
+                    1,
+                    2,
+                    0,
+                    3,
+                    4
+                  ]
+                ],
                 "explain": "Shirts are flat: 3まい. Then つくって もらいました."
               },
               {
@@ -155410,6 +155880,15 @@
                 "extra": [
                   "かきて "
                 ],
+                "accept": [
+                  [
+                    1,
+                    2,
+                    0,
+                    3,
+                    4
+                  ]
+                ],
                 "explain": "The helper with に, the map with を, then かいて もらいました."
               }
             ]
@@ -155608,6 +156087,14 @@
                 "extra": [
                   "おれいを "
                 ],
+                "accept": [
+                  [
+                    1,
+                    2,
+                    0,
+                    3
+                  ]
+                ],
                 "explain": "おれいの before カード makes a thank-you card; then を and {書|か}きました."
               }
             ]
@@ -155744,7 +156231,7 @@
                   "{来|く}る",
                   "まい",
                   "すみません",
-                  "{来|き}た"
+                  "{来|き}ます"
                 ],
                 "answers": [
                   0,
@@ -158063,7 +158550,7 @@
                     1
                   ]
                 ],
-                "explain": "かった and でした say it was; くなかった and じゃ なかった say it was not."
+                "explain": "たのしかった, きれいでした and おいしかった were good; たいへんでした, あまり たのしくなかった and よくなかった were not."
               }
             ]
           },
@@ -160301,6 +160788,13 @@
                   "{日|にち}よう{日|び}は ",
                   "ねぼうしたから、",
                   "でかけなかった。"
+                ],
+                "accept": [
+                  [
+                    1,
+                    0,
+                    2
+                  ]
                 ],
                 "extra": [
                   "でかけた。"
@@ -162794,7 +163288,7 @@
                   "だれですか。"
                 ],
                 "extra": [
-                  "かけて いる "
+                  "かぶって いる "
                 ],
                 "explain": "A mask takes します; いる comes before {人|ひと}, then は and だれですか."
               }
@@ -163386,7 +163880,7 @@
                   "mark": "{山|やま}{川|かわ}さん",
                   "en": "Mr. Yamakawa took photos of the Amazon River.",
                   "distractors": [
-                    "やまがわさん",
+                    "さんかわさん",
                     "やませんさん",
                     "さんせんさん"
                   ]
@@ -167243,7 +167737,7 @@
                   "mark": "{父|ふ}{母|ぼ}",
                   "en": "Please show this letter to your parents.",
                   "distractors": [
-                    "ちちはは",
+                    "ふぼう",
                     "ふは",
                     "ぶぼ"
                   ]
@@ -170954,7 +171448,7 @@
                   "written": "三行目",
                   "reading": "さんぎょうめ",
                   "markup": "{三|さん}{行|ぎょう}{目|め}",
-                  "romaji": "sangyoome",
+                  "romaji": "san-gyoo-me",
                   "en": "the third line",
                   "core": false
                 }
@@ -172679,7 +173173,7 @@
                   "written": "1週間",
                   "reading": "いっしゅうかん",
                   "markup": "{1|いっ}{週|しゅう}{間|かん}",
-                  "romaji": "isshuukan",
+                  "romaji": "i-sshuukan",
                   "en": "one week",
                   "core": true
                 },
@@ -172941,7 +173435,7 @@
                   "mark": "{今年|ことし}",
                   "en": "I want to go abroad this summer.",
                   "distractors": [
-                    "こんねん",
+                    "こどし",
                     "いまとし",
                     "きょねん"
                   ]
@@ -174073,8 +174567,7 @@
               "char": "都",
               "number": 114,
               "meanings": [
-                "metropolis",
-                "capital"
+                "metropolis"
               ],
               "on": [
                 {
@@ -174132,7 +174625,7 @@
                   ]
                 },
                 {
-                  "ja": "{日|に}よう{日|び}の ごごは {都|つ}ごうが いいですか。",
+                  "ja": "{日|にち}よう{日|び}の ごごは {都|つ}ごうが いいですか。",
                   "mark": "{都|つ}ごう",
                   "en": "Is Sunday afternoon convenient for you?",
                   "distractors": [
@@ -183980,7 +184473,7 @@
                   "mark": "{貸|かし}{家|や}",
                   "en": "I’m looking for a cheap house to rent near the station.",
                   "distractors": [
-                    "かしいえ",
+                    "かしけ",
                     "かしか",
                     "かりや"
                   ]
@@ -184113,6 +184606,9 @@
                   "markup": "{私|わたし}",
                   "romaji": "watashi",
                   "en": "I",
+                  "alsoRead": [
+                    "わたくし"
+                  ],
                   "core": true
                 },
                 {
@@ -184121,6 +184617,9 @@
                   "markup": "{私|わたくし}",
                   "romaji": "watakushi",
                   "en": "I",
+                  "alsoRead": [
+                    "わたし"
+                  ],
                   "core": true
                 },
                 {
@@ -185693,9 +186192,9 @@
                   "mark": "{日|に}{本|ほん}{犬|けん}",
                   "en": "Japanese breeds are clever dogs.",
                   "distractors": [
-                    "にほんいぬ",
                     "にほんげん",
-                    "にほんけい"
+                    "にほんけい",
+                    "にほんきん"
                   ]
                 }
               ],
@@ -185830,6 +186329,9 @@
                   "markup": "{米|こめ}",
                   "romaji": "kome",
                   "en": "rice",
+                  "alsoRead": [
+                    "べい"
+                  ],
                   "core": true
                 },
                 {
@@ -186566,6 +187068,9 @@
                   "markup": "{夕|ゆう}{飯|はん}",
                   "romaji": "yuuhan",
                   "en": "supper",
+                  "alsoRead": [
+                    "ゆうめし"
+                  ],
                   "core": true
                 },
                 {
@@ -186614,7 +187119,7 @@
                   "distractors": [
                     "ゆうばん",
                     "ゆうぱん",
-                    "ゆうめし"
+                    "ゆうぼん"
                   ]
                 },
                 {
@@ -187747,6 +188252,9 @@
                   "markup": "{工|こう}{場|じょう}",
                   "romaji": "koojoo",
                   "en": "factory",
+                  "alsoRead": [
+                    "こうば"
+                  ],
                   "core": true
                 },
                 {
@@ -188367,6 +188875,9 @@
                   "markup": "{工|こう}{場|じょう}",
                   "romaji": "koojoo",
                   "en": "factory",
+                  "alsoRead": [
+                    "こうば"
+                  ],
                   "core": true
                 },
                 {
@@ -189936,6 +190447,10 @@
                   "markup": "{文|ぶん}",
                   "romaji": "bun",
                   "en": "sentence",
+                  "alsoRead": [
+                    "ふみ",
+                    "もん"
+                  ],
                   "core": true
                 },
                 {
@@ -190623,6 +191138,9 @@
                   "markup": "{問|とい}",
                   "romaji": "toi",
                   "en": "question",
+                  "alsoRead": [
+                    "もん"
+                  ],
                   "core": true
                 },
                 {
@@ -190650,7 +191168,6 @@
                   "en": "Please answer the next question in Japanese.",
                   "distractors": [
                     "とう",
-                    "もん",
                     "どい",
                     "とえ"
                   ]
@@ -191622,6 +192139,9 @@
                   "markup": "{開|あ}ける",
                   "romaji": "akeru",
                   "en": "to open",
+                  "alsoRead": [
+                    "ひらける"
+                  ],
                   "core": true
                 },
                 {
@@ -191630,6 +192150,9 @@
                   "markup": "{開|ひら}く",
                   "romaji": "hiraku",
                   "en": "to open",
+                  "alsoRead": [
+                    "あく"
+                  ],
                   "core": true
                 },
                 {

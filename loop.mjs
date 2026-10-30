@@ -76,12 +76,14 @@ const itemOf=(content,id)=>loopItems(content).find(x=>x.item.id===id)||null;
 // never fall below open, whatever later happens to the item's prerequisites. An item is open once every reference in its
 // `requires` is met, and a locked item is revealed once every one has been started, or from the start when it has
 // `revealed: 'start'`; the flag only lifts hidden to revealed, never opens anything. An item without a requires list
-// (malformed content) stays hidden until it is started.
+// (malformed content) stays hidden until it is started. Sensei mode (progress.openAll) makes hidden and revealed open;
+// started and finished still come from the state.
 export function itemState(id,content,progress={}){
  const found=itemOf(content,id);if(!found)return 'hidden';
  const {type,item}=found,ref=`${type}:${id}`;
  if(refMet(ref,progress))return 'finished';
  if(refStarted(ref,progress))return 'started';
+ if(progress.openAll)return 'open';
  const needs=Array.isArray(item.requires)?item.requires:null;
  if(needs&&needs.every(x=>refMet(x,progress,content)))return 'open';
  return item.revealed==='start'||needs?.length&&needs.every(x=>refStarted(x,progress,content))?'revealed':'hidden';
@@ -245,11 +247,12 @@ export function partStates(practice,record,finished=false){
 export function currentPart(states){const k=list(states).findIndex(s=>!s.done);return k<0?list(states).length:k+1;}
 // The guard on a part route, after loopRoute: practice/<id>/<part> stays when the practice has that part and it is
 // open, else it becomes practice/<id> (a practice without parts, an unknown part, or one not open yet). Any other
-// route, and an unknown practice (the app's not-found page), passes through unchanged.
+// route, and an unknown practice (the app's not-found page), passes through unchanged. Sensei mode (progress.openAll)
+// opens every part, as a finished practice does; the done marks still come from the record.
 export function partRoute(route,content,progress={}){
  const [kind,id,part,...rest]=String(route).split('/');
  if(kind!=='practice'||!id||part===undefined)return route;
  const p=practicesOf(content).find(x=>x.id===id);if(!p)return route;
- const s=!rest.length&&partStates(p,progress.answers?.[id],refMet(`practice:${id}`,progress)).find(x=>x.id===part);
+ const s=!rest.length&&partStates(p,progress.answers?.[id],!!progress.openAll||refMet(`practice:${id}`,progress)).find(x=>x.id===part);
  return s&&s.open?route:`practice/${id}`;
 }

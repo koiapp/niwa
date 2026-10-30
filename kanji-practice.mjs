@@ -8,13 +8,14 @@
 // longer list under another run tag; that mode is not built. Mastery is undefined: nothing here scores a kanji.
 //
 // The kinds, each a tap on one of four options (never typing; no stroke order, no parts):
-//  - meaning      What does this kanji mean? The kanji large; four meaning texts.
+//  - meaning      What does this kanji mean? The kanji large; four meaning texts, never a kanji sharing a meaning.
 //  - readingHere  How is the red word read here? A sentence in furigana with the mark's kanji bare and red; four readings.
 //  - chooseKanji  Which kanji is the red word written with? The sentence with the mark as its kana in red; four forms.
 //  - wordReading  How is this word read? One of the kanji's core words as bare kanji, its tokens holding the kanji red;
 //                 four readings, the wrong ones the book's near misses: one token's reading changed (another reading of
 //                 the kanji, of another kanji of the word, a voicing change, a long-vowel or small っ slip), never an
-//                 impossible kana string (wordReadingTiers below).
+//                 impossible kana string (wordReadingTiers below), and never another right reading of the word (its
+//                 alsoRead, or the reading of a same-written words[]/special[] entry: validReadings).
 //  - soundMatch   Which kanji is read like this? The kanji's on and kun readings; four kanji.
 // The app draws them (rubyHTML for every Japanese line) and composes its feedback from feedbackOf.
 import {seeded,shuffled} from './kanji-words.mjs';
@@ -36,6 +37,10 @@ const toHira=s=>[...String(s)].map(ch=>{const c=ch.codePointAt(0);return c>=0x30
 const toKata=s=>[...String(s)].map(ch=>{const c=ch.codePointAt(0);return c>=0x3041&&c<=0x3096?String.fromCodePoint(c+0x60):ch;}).join('');
 const isKata=ch=>/[ァ-ヺ]/.test(ch);
 const meaningOf=e=>e.meanings.join(', ');
+// Whether two kanji share a meaning string (trimmed, case-insensitive): 晩 and 夜 are both "night", so neither is offered
+// as a wrong meaning for the other.
+const meaningKey=m=>String(m).trim().toLowerCase();
+const sameMeaning=(a,b)=>{const keys=new Set(a.meanings.map(meaningKey));return b.meanings.some(m=>keys.has(meaningKey(m)));};
 
 // ── Readings ───────────────────────────────────────────────────────────────────────────────────────────────
 // What soundMatch shows: the on kana, then the kun kana with its okurigana dash as ・, joined by 、 (サン、やま).
@@ -127,6 +132,10 @@ function wordReadingTiers(w,tokens,t,{e,list,any,chars,rand}){
  return [mine.filter(r=>r!==own).map(r=>swap(t,r)),theirs,voicing,slips(own).map(r=>swap(t,r)),kanji.flatMap(k=>slips(read[k]).map(r=>swap(k,r))),byLength(listed.filter(r=>far(r)<=1)),byLength(listed),byLength(everyWord)];
 }
 
+// The readings that are also right for word w, never offered as wrong: its alsoRead, and the reading and alsoRead of every
+// other words[] or special[] entry of the kanji with the same written form (私 わたし beside 私 わたくし).
+const validReadings=(e,w)=>new Set([...(e.words??[]),...(e.special??[])].filter(x=>x===w||x.written===w.written).flatMap(x=>[x.reading,...(x.alsoRead??[])]));
+
 // ── Building ───────────────────────────────────────────────────────────────────────────────────────────────
 // Picks up to `n` wrong options from the tiers in order: each tier's items (already in seeded order) mapped to an option
 // by `make` (null to skip), distinct by text and never `right`'s text.
@@ -149,7 +158,7 @@ const BUILD={
  meaning({e,list,before,any,rand}){
   const tiers=[shuffled(others(list,e),rand('meaning|list')),shuffled(others(before,e),rand('meaning|met')),shuffled(others(any,e),rand('meaning|any'))];
   const right={char:e.char,text:meaningOf(e)};
-  return asked('meaning',e,rand,right,pickWrong(tiers,x=>({char:x.char,text:meaningOf(x)}),right));
+  return asked('meaning',e,rand,right,pickWrong(tiers,x=>sameMeaning(e,x)?null:{char:x.char,text:meaningOf(x)},right));
  },
  readingHere({e,rand,pick}){
   const s=e.sentences[pick],right={text:plainReading(s.mark)};
@@ -168,7 +177,8 @@ const BUILD={
   const pool=[core.filter(w=>w.written!==marked),core,e.words].find(p=>p.length);
   const w=pool[Math.floor(rand('word')()*pool.length)],tokens=wordTokens(w.markup);
   const t=tokens.findIndex(x=>x.reading!==null&&x.text.includes(e.char));if(t<0)return null;
-  const right={text:w.reading},wrong=pickWrong(wordReadingTiers(w,tokens,t,ctx),text=>possible(text)?{text}:null,right);
+  const valid=validReadings(e,w),right={text:w.reading};
+  const wrong=pickWrong(wordReadingTiers(w,tokens,t,ctx),text=>possible(text)&&!valid.has(text)?{text}:null,right);
   return asked('wordReading',e,rand,right,wrong,{word:{written:w.written,reading:w.reading,markup:w.markup,romaji:w.romaji,en:w.en}});
  },
  soundMatch({e,list,before,any,rand,chars}){

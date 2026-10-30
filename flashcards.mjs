@@ -25,6 +25,12 @@ const own=(o,k)=>!!o&&typeof o==='object'&&Object.prototype.hasOwnProperty.call(
 const time=v=>Number.isFinite(v)&&v>=0;
 
 export const hasKanji=word=>KANJI.test(plainWritten(word?.word));
+// Sample words for a format preview with no cards of its own: the first word written with kanji, then the first written
+// in kana only, from the content's vocabulary (ids only; either is left out when the content has none).
+export function sampleWords(vocabulary){
+ const list=(Array.isArray(vocabulary)?vocabulary:[]).filter(w=>typeof w?.id==='string'&&w.id&&typeof w.word==='string'&&w.word);
+ return [list.find(hasKanji),list.find(w=>!hasKanji(w))].filter(Boolean).map(w=>w.id);
+}
 export const newDeckId=(now=Date.now(),rand=Math.random)=>`deck-${now.toString(36)}-${Math.floor(rand()*36**4).toString(36).padStart(4,'0')}`;
 export function deckName(value){return String(value??'').replace(/\s+/g,' ').trim();}
 export const findDeck=(state,id)=>(state?.decks||[]).find(d=>d.id===id)||null;

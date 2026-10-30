@@ -22,7 +22,7 @@ export const transferChecks={
   ['Correct. You and three friends make four, and きんえんせき is non-smoking.','The staff counts you too: four people, not three.','きつえんせき is where people smoke.']),
  l05p2:q('At a ramen shop, the menu on the wall shows 「みそラーメン」, which you don’t know. What do you ask the staff?',
   ['すみません。「みそラーメン」は なんですか。','すみません。「みそラーメン」は だれですか。','すみません。「みそラーメン」に しますか。'],0,
-  ['Correct. なんですか asks what the dish is.','だれですか asks who a person is, not what a dish is.','に しますか asks someone what they will choose.']),
+  ['Correct. なんですか asks what the dish is.','だれですか asks who a person is, not what a dish is.','に しますか asks whether someone will have it; it does not ask what a dish is.']),
  l05p3:q('At a buffet, you try 「たらこ」 for the first time. It is very salty, but you like it. What do you tell your friend?',
   ['とても しおからいです。でも、おいしいです。','とても しおからくないです。でも、おいしいです。','とても しおからいです。それと、おいしいです。'],0,
   ['Correct. しおからい for salty, then でも turns to the good point.','くないです says it is not salty, but it is.','それと adds an item to an order; it does not mean “but”.']),
@@ -117,7 +117,7 @@ export const transferChecks={
   ['Correct. The て form with くれない？, a casual favour.','くれない？ follows the て form, とって.','いただきました reports a favour already done, and it is not casual.']),
  l12p4:q('At the office, you hurt your leg on the stairs and want to see a doctor this afternoon. What do you say to your boss?',
   ['かいだんから おちたので、ごご びょういんへ {行|い}っても いいですか。','かいだんから おちたので、ごご びょういんへ {行|い}っては いけません。','かいだんから おちますので、ごご びょういんへ {行|い}っても いいですか。'],0,
-  ['Correct. ので gives what happened, and ～ても いいですか asks permission.','は いけません states a rule; it asks nothing.','ので follows the plain form, and the fall has already happened: おちた.']),
+  ['Correct. ので gives what happened, and ～ても いいですか asks permission.','は いけません states a rule; it asks nothing.','The fall has already happened, so it is the past: おちたので.']),
  // Stone 13 (Lesson 13).
  l13p1:q('At a language school, your classmate says she would like to eat Chinese food. You know a good Chinese restaurant next to the school. Which reply fits?',
   ['ちゅうかりょうりなら、{学校|がっこう}の となりに いい {店|みせ}が ありますよ。','ちゅうかりょうりから、{学校|がっこう}の となりに いい {店|みせ}が ありますよ。','ちゅうかりょうりが、{学校|がっこう}の となりに いい {店|みせ}が ありますか。'],0,

@@ -11,9 +11,11 @@ export function orderedTopicLessons(node, path, lessons) {
 }
 
 // A lesson already opened or finished keeps its stone open. Otherwise, all direct prerequisites
-// must have been started for an outline, and finished for entry (including the lesson's checkpoint).
+// must have been started for an outline, and finished for entry (including the lesson's checkpoint). Sensei mode
+// (`openAll`) opens every topic that has a lesson with a unit; one without keeps its normal result.
 export function stoneState(node, path, lessons, opts = {}) {
  const units = orderedTopicLessons(node, path, lessons);
+ if (opts.openAll && units.length) return 'open';
  if (units.some(l => lessonLock(path, l.id, opts).open)) return 'open';
  const started = id => (opts.completed || []).includes(id) || !!opts.started?.(id);
  return units.some(l => path.requires[l.id].every(started)) ? 'outline' : 'hidden';

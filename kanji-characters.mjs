@@ -6,7 +6,8 @@
 // Content: kanji.characters = {version: 1, lessons: [{id, part, number, title, en, kanji: [character]}]}, a character being
 // {char, number, meanings, on, kun, story, words, special?, sentences, lookAlikes}; each word and special reading carries
 // `markup`, the word as app markup with one {written|reading} token per kanji wherever the reading splits ({山|やま}{田|だ}
-// さん), so the app can colour the target kanji's own reading red. characterProblems lists every fault (the validator fails
+// さん), so the app can colour the target kanji's own reading red, and may carry `alsoRead`, the written form's other right
+// readings (the set practice never offers them as wrong). characterProblems lists every fault (the validator fails
 // on each); readKanjiCharacters gives the frozen track, strict (throws on the first problem) or lenient (the app: drops a
 // bad character or lesson, keeps the listed order when the numbering is broken).
 //
@@ -28,8 +29,8 @@ const TRACK_KEYS=['version','lessons'];
 const LESSON_KEYS=['id','part','number','title','en','kanji'];
 const CHAR_KEYS=['char','number','meanings','on','kun','story','words','special','sentences','lookAlikes'];
 const READING_KEYS=['kana','romaji','variants'];
-const WORD_KEYS=['written','reading','markup','romaji','en','core'];
-const SPECIAL_KEYS=['written','reading','markup','romaji','en'];
+const WORD_KEYS=['written','reading','markup','romaji','en','alsoRead','core'];
+const SPECIAL_KEYS=['written','reading','markup','romaji','en','alsoRead'];
 const SENTENCE_KEYS=['ja','mark','en','distractors'];
 const V1_ENTRY_KEYS=['met','points','pointDay','known'];
 const STATE_KEYS=['version','chars','sets','run'];
@@ -117,6 +118,17 @@ function markupProblems(w,ch,at){
  if(!tokensIn(m).some(t=>t[1].includes(ch)))out.push(`${at}: markup ${m} must hold a token written with ${ch}`);
  return out;
 }
+// A word's or special reading's optional alsoRead: the other right readings of its written form (私 わたし: ['わたくし']),
+// which the set practice never offers as a wrong one. One or more distinct kana strings, none the entry's reading.
+function alsoReadProblems(w,at){
+ const a=w.alsoRead;
+ if(!Array.isArray(a)||!a.length)return [`${at}: alsoRead must list one or more readings`];
+ const out=[];
+ if(!a.every(v=>typeof v==='string'&&KANA.test(v)))out.push(`${at}: alsoRead must be kana only`);
+ if(new Set(a).size!==a.length)out.push(`${at}: alsoRead must be distinct`);
+ if(typeof w.reading==='string'&&a.includes(w.reading))out.push(`${at}: alsoRead repeats the reading ${w.reading}`);
+ return out;
+}
 function wordProblems(list,ch,name,{special=false}={}){
  const kind=special?'special':'words';
  if(!Array.isArray(list))return [`${name}: ${kind} must be a list`];
@@ -132,6 +144,7 @@ function wordProblems(list,ch,name,{special=false}={}){
   if(typeof w.romaji!=='string'||!ROMAJI.test(w.romaji))out.push(`${at}: romaji must be lower-case letters, - and ' only`);
   if(!text(w.en))out.push(`${at}: en must be a non-empty string`);
   out.push(...markupProblems(w,ch,at));
+  if(own(w,'alsoRead'))out.push(...alsoReadProblems(w,at));
   if(special)return;
   if(typeof w.core!=='boolean')out.push(`${at}: core must be true or false`);
   else if(w.core&&plain)out.push(`${at}: core words come first`);
@@ -339,18 +352,18 @@ const setAt=(track,id)=>(track?.lessons??[]).findIndex(l=>l.id===id);
 const isDone=(kc,id)=>!!(own(kc?.sets,id)&&kc.sets[id]?.done);
 // locked, reading, ready or done: done once its practice was finished; else locked while the set before it in track order
 // is not done (the first set never is); else ready when every one of its kanji is met (the practice may start); else
-// reading. null for an unknown id.
-export function setStatus(track,kc,id){
+// reading. null for an unknown id. Sensei mode (opts.openAll) locks no set: it is reading, ready or done by the store.
+export function setStatus(track,kc,id,opts={}){
  const at=setAt(track,id);if(at<0)return null;
  const base=storeOf(kc),l=track.lessons[at];
  if(isDone(base,id))return 'done';
- if(at>0&&!isDone(base,track.lessons[at-1].id))return 'locked';
+ if(!opts?.openAll&&at>0&&!isDone(base,track.lessons[at-1].id))return 'locked';
  return l.kanji.every(e=>charStage(base,e.char)==='met')?'ready':'reading';
 }
 // The sets in track order: [{id, part, number, title, en, status, read (its met kanji), total (its kanji)}].
-export function setList(track,kc){
+export function setList(track,kc,opts={}){
  const base=storeOf(kc);
- return (track?.lessons??[]).map(l=>({id:l.id,part:l.part,number:l.number,title:l.title,en:l.en,status:setStatus(track,base,l.id),read:l.kanji.filter(e=>charStage(base,e.char)==='met').length,total:l.kanji.length}));
+ return (track?.lessons??[]).map(l=>({id:l.id,part:l.part,number:l.number,title:l.title,en:l.en,status:setStatus(track,base,l.id,opts),read:l.kanji.filter(e=>charStage(base,e.char)==='met').length,total:l.kanji.length}));
 }
 // The first set not done (the one the learner is on), or null when every set is done.
 export function currentSet(track,kc){
@@ -358,14 +371,15 @@ export function currentSet(track,kc){
  return (track?.lessons??[]).find(l=>!isDone(base,l.id))?.id??null;
 }
 // The set's board, [{char, state}] in its order: a met character is read; the first unmet one is next; every later unmet
-// one is hidden (plain paper). Empty for an unknown id.
-export function boardCells(track,kc,id){
+// one is hidden (plain paper). Sensei mode (opts.openAll) makes every later unmet one later instead: plain paper too, but
+// it opens its reading pages, so the kanji can be read in any order. Empty for an unknown id.
+export function boardCells(track,kc,id,opts={}){
  const at=setAt(track,id);if(at<0)return [];
  const base=storeOf(kc);let next=false;
  return track.lessons[at].kanji.map(e=>{
   if(charStage(base,e.char)==='met')return {char:e.char,state:'read'};
   if(!next){next=true;return {char:e.char,state:'next'};}
-  return {char:e.char,state:'hidden'};
+  return {char:e.char,state:opts?.openAll?'later':'hidden'};
  });
 }
 // Starts the set's practice: run {set: id, seed, answers: []}, replacing any run. The same store for a bad id or seed.
