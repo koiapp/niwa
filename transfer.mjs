@@ -7,10 +7,10 @@
 // loop Phase 3); its `sources` are the language contract that transferProblems checks. Shared by the app, the seed, the
 // validator and the tests; nothing here touches the DOM, and every function that needs the time takes `now`, so tests
 // inject the clock.
-import {validQuestion,assessChoice} from './assessment.mjs';
-import {indexWords,validateOccurrences,occurrenceReadingProblems,insideRuby,plainWritten,sameDay} from './vocabulary.mjs';
-import {hasUnit,unitItems,wordIds,patternPoints} from './exercises.mjs';
-import {DAY,ENTRY_DAYS} from './schedule.mjs';
+import {validQuestion,assessChoice} from './assessment.mjs?b=2bde53d';
+import {indexWords,validateOccurrences,occurrenceReadingProblems,insideRuby,plainWritten,sameDay} from './vocabulary.mjs?b=2bde53d';
+import {hasUnit,unitItems,wordIds,patternPoints} from './exercises.mjs?b=2bde53d';
+import {DAY,ENTRY_DAYS} from './schedule.mjs?b=2bde53d';
 
 export const TRANSFER_VERSION=1;
 export const GENRES=['notice','message','receipt','menu','sign'];

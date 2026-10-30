@@ -5,7 +5,7 @@
 // then in section order one page per point, one per practice item (returned items already joined to the まとめ's end),
 // one for the conversation, and the finish page. A run that is not a lesson can leave out the opening, the words or the
 // finish; one of its sections may carry its own label (a checkpoint's questions) or be a plain reading page (kind 'page').
-import {setLabels,isFinal} from './exercises.mjs';
+import {setLabels,isFinal} from './exercises.mjs?b=2bde53d';
 
 export const WORDS_PER_PAGE=8;
 const RESERVED=['opening','words','finish','dialogue'];

@@ -2,8 +2,8 @@
 // ordered card faces, self-rating, deck-independent word review scheduling and saved-state/backup reading.
 // Pure functions only: used by app.js in the browser, tools/validate.mjs and tests/flashcards.test.mjs.
 // Cards store vocabulary IDs, never dictionary text, so word records and deck formats stay the single source.
-import {DICTIONARY_FIELDS,fieldLabel,entryFields,plainWritten,recordDiscovery,wordSources,resolvePath,sentenceRange,inReadingText} from './vocabulary.mjs';
-import {review,seedMemory,validMemory,cleanMemory,eventOf,inRecovery,recoveryKey} from './schedule.mjs';
+import {DICTIONARY_FIELDS,fieldLabel,entryFields,plainWritten,recordDiscovery,wordSources,resolvePath,sentenceRange,inReadingText} from './vocabulary.mjs?b=2bde53d';
+import {review,seedMemory,validMemory,cleanMemory,eventOf,inRecovery,recoveryKey} from './schedule.mjs?b=2bde53d';
 
 export const FACE_FIELDS=DICTIONARY_FIELDS.map(f=>f.id);
 export const DECK_PRESETS=[

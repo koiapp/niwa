@@ -2,9 +2,9 @@
 // Three things are kept apart and labeled as such: observed rates (schedule.mjs outcomeReport, answers actually given),
 // model estimates (recall falling below the target, the seven-day workload in session.mjs) and recovery status
 // (recovery.mjs). Pure: nothing here touches the DOM or the clock, and nothing writes to the records it reads.
-import {TARGET,outcomeReport,recallAt,validMemory,episodeOf,LEECH_LAPSES} from './schedule.mjs';
-import {scheduledItems,workloadForecast,lessonStarted,localDays,FORECAST_DAYS} from './session.mjs';
-import {recoveryUnits} from './recovery.mjs';
+import {TARGET,outcomeReport,recallAt,validMemory,episodeOf,LEECH_LAPSES} from './schedule.mjs?b=2bde53d';
+import {scheduledItems,workloadForecast,lessonStarted,localDays,FORECAST_DAYS} from './session.mjs?b=2bde53d';
+import {recoveryUnits} from './recovery.mjs?b=2bde53d';
 
 // Model-scheduled items whose estimated recall is below the target now, or falls below it before the end of the last
 // forecast day. Items in recovery are left out: they are listed under recovery instead, never counted twice. These are

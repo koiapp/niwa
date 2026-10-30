@@ -1,6 +1,6 @@
 // Shared vocabulary records, explicit contextual occurrences, discovery state, dictionary preferences and reading evidence.
 // Pure functions only: used by app.js in the browser, tools/validate.mjs and tests/vocabulary.test.mjs.
-import {review,enterMemory,seedMemory,validMemory,cleanMemory,eventOf} from './schedule.mjs';
+import {review,enterMemory,seedMemory,validMemory,cleanMemory,eventOf} from './schedule.mjs?b=2bde53d';
 export const RUBY_PATTERN=/\{([^|{}]+)\|([^{}]+)\}/g;
 export const PACKS=['core','plus1','reading'];
 export const DICTIONARY_FIELDS=[

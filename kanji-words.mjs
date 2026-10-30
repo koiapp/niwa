@@ -16,7 +16,7 @@
 // Show all kanji on, a met word shows in plain kanji once every kanji in it is known there. Character mastery is undefined
 // for now, so that Set is empty and the rule is wired but inert. A track profile draws no word cards, so it never sets a
 // word's `known`. Without `known` (no track), a word is mastered when it is known.
-import {RUBY_PATTERN} from './vocabulary.mjs';
+import {RUBY_PATTERN} from './vocabulary.mjs?b=2bde53d';
 export const KANJI_WORDS_VERSION=1;
 export const KNOWN_POINTS=3;
 export const POINTS_PER_DAY=1;
