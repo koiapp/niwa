@@ -350,6 +350,19 @@ label.button{cursor:pointer}
 .kanji-switch[aria-pressed=true] .switch-track::after{transform:translateX(14px)}
 @media(prefers-reduced-motion:reduce){.switch-track,.switch-track::after{transition:none}}
 @media(forced-colors:active){.switch-track{border:1px solid ButtonText}.kanji-switch[aria-pressed=true] .switch-track{background:Highlight}}
+/* Sensei mode: the same switch, its track filled in a warm ochre while on; the bar takes a soft warm wash (no stripe) and
+   a muted note at its start. Narrow screens drop the note, tighten the two switches so both fit, and show the footer's
+   line instead. */
+.sensei-switch[aria-pressed=true] .switch-track{background:#c9832f}
+.sensei-switch[aria-pressed=true] .switch-track::after{transform:translateX(14px)}
+@media(forced-colors:active){.sensei-switch[aria-pressed=true] .switch-track{background:Highlight}}
+body.is-sensei .topbar{background:linear-gradient(180deg,#fdf4e5,#faecd6);border-bottom-color:#ecd5b2;border-radius:0 0 14px 14px;padding-left:16px;padding-right:16px}
+.topbar>.sensei-note{margin-right:auto;min-width:0;font-size:.875rem;font-weight:400;letter-spacing:0;line-height:1.4;color:#7a5524}
+.app-shell>footer.sensei-footer{display:none}
+.topbar>.sensei-switch,.topbar>.kanji-switch{flex:none;white-space:nowrap}
+@media(max-width:1000px){.topbar>.sensei-note{display:none}.app-shell>footer.sensei-footer{display:block;margin:0;padding:6px 0;border:0;text-align:center;font-size:.75rem;line-height:1.4;color:#7a5524}}
+@media(max-width:420px){.topbar{gap:8px}body.is-sensei .topbar,.topbar{padding-left:10px;padding-right:10px}.topbar .button.small{gap:8px;padding:8px 10px}}
+.kanji-board .kanji-card.is-later{cursor:pointer}
 /* Page heading with its status and next action on the right. */
 .page-heading h1{margin-bottom:0}
 .page-heading p{margin-top:6px}

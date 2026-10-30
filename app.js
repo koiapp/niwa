@@ -42,7 +42,9 @@ let activeRoute='',navigationDirection=null,routeFocus=null,sourceReturn=null,re
 const scrollPositions=new Map();
 $('.skip-link').onclick=e=>{e.preventDefault();main.focus();};
 let data,lessons={lessons:[],passages:[],vocabulary:[]},selected='foundations',view='field';
-let state={version:STATE_VERSION,showAllKanji:false,kanjiWords:emptyKanjiWords(),kanjiCards:emptyKanjiCards(),kanjiChars:emptyKanjiChars(),completed:[],answers:{},reviews:{},recall:emptyRecall(),loop:emptyLoop(),discovered:{},dictionary:{fields:DEFAULT_FIELDS.slice()},decks:[],readingEvidence:emptyReadingEvidence(),wordReviews:emptyReviewState(),daily:emptyDaily(),patterns:emptyPatterns(),outcomes:emptyLedger(),recovery:emptyRecovery(),transfer:emptyTransfer(),progression:emptyProgression(),checkpoints:emptyCheckpoints()};
+// A first visit's learner state. Startup and Sensei mode both run it through normalize() once the content loads.
+const freshState=()=>({version:STATE_VERSION,showAllKanji:false,kanjiWords:emptyKanjiWords(),kanjiCards:emptyKanjiCards(),kanjiChars:emptyKanjiChars(),completed:[],answers:{},reviews:{},recall:emptyRecall(),loop:emptyLoop(),discovered:{},dictionary:{fields:DEFAULT_FIELDS.slice()},decks:[],readingEvidence:emptyReadingEvidence(),wordReviews:emptyReviewState(),daily:emptyDaily(),patterns:emptyPatterns(),outcomes:emptyLedger(),recovery:emptyRecovery(),transfer:emptyTransfer(),progression:emptyProgression(),checkpoints:emptyCheckpoints()});
+let state=freshState();
 let words=new Map(),wordReturn=null,deckUndo=null,panelRefresh=null;
 // Collections chosen during an unanswered question wait here and apply with its feedback. Leaving the page discards them.
 let collectQueue=[];const quizRefs=new Map();
@@ -65,7 +67,17 @@ function readShowAll(v,{strict=false}={}){
 // them at load and a backup at restore, and neither is refused for them.
 const RETIRED_STATE=['kanjiParts','kanjiMeanings','kanjiReview','draft'];
 // The storage key comes from profile.mjs (niwa-v1 for the personal build) and stays fixed; the state inside carries its own version. Version 1 saves migrate to version 2 on load.
-try{const saved=migrateState(JSON.parse(localStorage.getItem(profile.storageKey)||'null'));if(saved){const {reading,...rest}=saved;state={...state,...rest,showAllKanji:readShowAll(saved)};}}catch{}
+// loadSaved: the saved state over a first visit's defaults, before normalize(); the defaults alone when nothing reads.
+function loadSaved(){let s=freshState();try{const saved=migrateState(JSON.parse(localStorage.getItem(profile.storageKey)||'null'));if(saved){const {reading,...rest}=saved;s={...s,...rest,showAllKanji:readShowAll(saved)};}}catch{}return s;}
+// Sensei mode (handoffs/2026-10-30-sensei-mode-brief.md): a top-bar switch that opens every lesson, checkpoint, practice,
+// book and kanji set on a fresh learner state held in memory, so teachers can check the content without playing through
+// it. It is per tab: sessionStorage `${profile.storageKey}:sensei` is '1' while on, so a reload stays on (on a fresh
+// state again) and a new tab starts normal. While on, save() writes nothing and localStorage is never touched; the
+// pure modules get `openAll: true` through lockOpts(), cpOpts(), loopProgress() and kanjiOpts(), and nothing else here
+// knows about locks.
+const SENSEI_KEY=`${profile.storageKey}:sensei`;
+let sensei=(()=>{try{return sessionStorage.getItem(SENSEI_KEY)==='1';}catch{return false;}})();
+state=sensei?freshState():loadSaved();
 // Every source logs its applied answers in the outcome ledger, so the eligible lapses a commit adds there count towards
 // recovery (schedule.mjs trackLapses) in the same commit.
 function commit(next){if(next.outcomes!==state.outcomes){const t=trackLapses(next.recovery,state.outcomes,next.outcomes);if(t.store!==next.recovery)next={...next,recovery:t.store};}state=next;save();}
@@ -84,10 +96,12 @@ function kanjiWordsAnswer(unit,it,correct,now=Date.now()){
  if(it.kanjiWord)kw=recordAnswer(kw,it.kanjiWord,correct===true,now);
  return kw;
 }
-// The app footer turns into a warning, and only then shows, while this browser is not saving.
+// The app footer turns into a warning, and only then shows, while this browser is not saving. In Sensei mode it says
+// that nothing is saved instead (shown on narrow screens, where the top bar has no room for the note).
 let footerSaving=null;
-function storageFooter(){if(footerSaving===storageReady)return;const f=document.querySelector('.app-shell>footer');if(!f)return;footerSaving=storageReady;f.classList.toggle('storage-footer',!storageReady);f.innerHTML=storageReady?'Progress is saved in this browser.':'<strong>This browser is not saving.</strong> Your progress, words and decks will be lost when you close this page. Export a backup from Library → Progress &amp; backup to keep them.';}
-function save(){try{localStorage.setItem(profile.storageKey,JSON.stringify(state));storageReady=true;}catch{storageReady=false;toast('Your browser could not save progress. Export a backup from the Library.');}storageFooter();}
+function storageFooter(){const mode=sensei?'sensei':storageReady?'saving':'broken';if(footerSaving===mode)return;const f=document.querySelector('.app-shell>footer');if(!f)return;footerSaving=mode;f.classList.toggle('storage-footer',mode==='broken');f.classList.toggle('sensei-footer',mode==='sensei');f.innerHTML=mode==='sensei'?'Sensei mode: everything is open and nothing you do is saved.':mode==='saving'?'Progress is saved in this browser.':'<strong>This browser is not saving.</strong> Your progress, words and decks will be lost when you close this page. Export a backup from Library → Progress &amp; backup to keep them.';}
+// Sensei mode saves nothing and leaves storageReady as it was: the real state stays in localStorage untouched.
+function save(){if(sensei)return;try{localStorage.setItem(profile.storageKey,JSON.stringify(state));storageReady=true;}catch{storageReady=false;toast('Your browser could not save progress. Export a backup from the Library.');}storageFooter();}
 function toast(msg){$('#toast').textContent=msg;$('#toast').classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').classList.remove('show'),4500);}
 // Japanese text: jp() is the one place {written|reading} markup becomes HTML. Staged tokens (kanji-words.mjs stagedText;
 // docs/data-contract.md "Stages on screen", 2026-10-29) are kana (plain reading) while Show all kanji is off. With it on,
@@ -276,11 +290,11 @@ const kanjiSwitch=()=>$('#kanji-switch').setAttribute('aria-pressed',String(stat
 $('#kanji-switch').onclick=()=>{state.showAllKanji=!state.showAllKanji;save();kanjiSwitch();refreshKanji();};
 function heading(title,subtitle='',meta='',action=''){return `<div class="page-heading"><div><h1>${esc(title)}</h1>${subtitle?`<p>${esc(subtitle)}</p>`:''}</div>${meta||action?`<div class="heading-side">${meta?`<span class="heading-meta">${esc(meta)}</span>`:''}${action}</div>`:''}</div>`;}
 // Cumulative checkpoints (checkpoints.mjs): the earliest unfinished one is due once its lessons are finished.
-const cpOpts=()=>({completed:state.completed,progression:state.progression,checkpoints:state.checkpoints});
+const cpOpts=()=>({completed:state.completed,progression:state.progression,checkpoints:state.checkpoints,openAll:sensei});
 const dueNow=()=>dueCheckpoint(data.path,lessons,cpOpts());
 // Lesson access (progression.mjs lessonLock): a lesson opens once what it builds on is finished, and a due checkpoint
 // holds the general lessons after it. A lock is shown where the lesson sits, never as a link to what it waits for.
-const lockOpts=(checkpoint=dueNow())=>({completed:state.completed,started:id=>lessonStarted(state,id)||state.progression.active===id,checkpoint});
+const lockOpts=(checkpoint=dueNow())=>({completed:state.completed,started:id=>lessonStarted(state,id)||state.progression.active===id,checkpoint,openAll:sensei});
 const lockOf=(id,opts=lockOpts())=>lessonLock(data.path,id,opts);
 const stoneOf=(id,opts=lockOpts())=>stoneState(id,data.path,lessons.lessons,opts);
 const openTopics=(opts=lockOpts())=>data.rows.flatMap(row=>row.nodes).filter(id=>stoneOf(id,opts)==='open').map(id=>data.nodes.find(n=>n.id===id));
@@ -296,7 +310,7 @@ const practiceOf=id=>practicesOf(lessons).find(p=>p.id===id)||null;
 const practiceIds=()=>practicesOf(lessons).map(p=>p.id);
 const unitPractices=()=>practicesOf(lessons).filter(p=>practiceKind(p)==='unit');
 function loopContent(){return {lessons:lessons.lessons,practices:{items:practicesOf(lessons).filter(p=>VIEW_KINDS.includes(practiceKind(p)))},passages:lessons.passages,transfer:lessons.transfer};}
-function loopProgress(opts=lockOpts()){return {completed:state.completed,started:opts.started,answers:state.answers,loop:state.loop,recall:state.recall,transfer:state.transfer,stoneState:node=>stoneOf(node,opts)};}
+function loopProgress(opts=lockOpts()){return {completed:state.completed,started:opts.started,answers:state.answers,loop:state.loop,recall:state.recall,transfer:state.transfer,stoneState:node=>stoneOf(node,opts),openAll:sensei};}
 const setOpen=id=>isOpen(itemState(id,loopContent(),loopProgress()));
 // A checkpoint opens once it is due (open, started or changed since it started) or finished, and one with a run is never
 // shut out. Any other #checkpoint/<n> lands on the topic page where its row will sit, or Learn while that topic is closed.
@@ -317,13 +331,15 @@ const docsShipped=profile.docs!==false;
 function routeGuard(){const opts=lockOpts(),content=loopContent(),progress=loopProgress(opts);return key=>key.startsWith('review/')?'practice':!docsShipped&&key.split('/')[0]==='guide'?'library':kanjiRoute(practiceRoute(partRoute(loopRoute(checkpointRoute(learnRoute(convertedRoute(key),data.path,lessons.lessons,data.nodes,opts),opts),content,progress),content,progress)));}
 // The Kanji page's sets (a track profile): #kanji the set list, #kanji/<set> its board, #kanji/<set>/practice its run.
 // With no track every #kanji/… is #kanji; a locked or unknown set lands on the list; the practice of a set still being
-// read (setStatus 'reading') lands on its board, as does any other address under a set.
+// read (setStatus 'reading') lands on its board, as does any other address under a set. Sensei mode keeps every set and
+// its practice.
+const kanjiOpts=()=>({openAll:sensei});
 function kanjiRoute(key){
  const [name,id,sub,...rest]=key.split('/');if(name!=='kanji'||id===undefined)return key;
  if(!hasTrack(kanjiTrack))return 'kanji';
- const s=setStatus(kanjiTrack,state.kanjiChars,id);if(!s||s==='locked')return 'kanji';
+ const s=setStatus(kanjiTrack,state.kanjiChars,id,kanjiOpts());if(!s||s==='locked')return 'kanji';
  if(sub===undefined)return key;
- return sub==='practice'&&!rest.length&&s!=='reading'?key:`kanji/${id}`;
+ return sub==='practice'&&!rest.length&&(s!=='reading'||sensei)?key:`kanji/${id}`;
 }
 // The six lessons that became optional practices in loop 2b (CONVERTED in recall.mjs): an old #lesson/r05 (s03, d01–d04)
 // becomes its practice's route, which loopRoute then keeps while the set is open, started or finished, else Practice.
@@ -351,7 +367,8 @@ function withoutUnitWords(snap,unit){
  const drop=new Set(unitKanjiWords(unit).filter(id=>!also.has(id)&&Object.hasOwn(state.kanjiWords.words,id)));if(!drop.size)return snap;
  return {...snap,kanji:snap.kanji.filter(id=>!drop.has(id))};
 }
-function unlockedSince(before){const now=openNow(),loop=opened(before.loop,now.loop,loopContent()),of=kind=>loop.filter(x=>x.kind===kind).map(x=>x.id);return {lessons:now.lessons.filter(id=>!before.lessons.includes(id)),stones:now.stones.filter(id=>!before.stones.includes(id)),checkpoint:now.checkpoint&&now.checkpoint.n!==before.checkpoint?.n?now.checkpoint:null,practices:of('practice'),books:of('book'),kanji:roundOpened(before.kanji.length,now.kanji.length,kanjiPolicy)};}
+// In Sensei mode everything is open already, so nothing is revealed: every checkpoint has its row, and none is new.
+function unlockedSince(before){const now=openNow(),loop=opened(before.loop,now.loop,loopContent()),of=kind=>loop.filter(x=>x.kind===kind).map(x=>x.id);return {lessons:now.lessons.filter(id=>!before.lessons.includes(id)),stones:now.stones.filter(id=>!before.stones.includes(id)),checkpoint:!sensei&&now.checkpoint&&now.checkpoint.n!==before.checkpoint?.n?now.checkpoint:null,practices:of('practice'),books:of('book'),kanji:roundOpened(before.kanji.length,now.kanji.length,kanjiPolicy)};}
 // What an unlock reveal names, as text (rule 10): each stone, lesson (a lesson or checkpoint in another topic than `home`
 // names that topic), checkpoint, practice set (in Practice), book (in Library → Reading) and the Kanji page's first round.
 function unlockItems(u,home=null){
@@ -400,8 +417,9 @@ function lessonRow(l,lock,fresh=false){
 const lockedRow=title=>`<li class="lesson-row is-planned is-locked"><span class="lesson-row-title">${esc(title)}<span class="sr-only"> (locked)</span></span></li>`;
 const plannedRow=title=>`<li class="lesson-row is-planned"><span class="lesson-row-title">${esc(title)}</span><span class="sr-only"> (not available yet)</span></li>`;
 // A due checkpoint's row: the thing to do here, now. Its mark is the share of the run's questions answered, as the run
-// counts them (runOutcome); a stale run starts again, so it keeps the arrow. A finished checkpoint is not listed here.
-const checkpointRow=(cp,fresh=false)=>{const o=cp.status==='started'?runOutcome(lessons,cp.run):null;return `<li><a class="lesson-row is-checkpoint${fresh?' is-unlocked':''}" href="#checkpoint/${cp.n}"><span class="lesson-row-title">Checkpoint ${cp.n}${freshMark(fresh)}<span class="lesson-row-sub">A short closed-book check on the lessons you have finished</span></span><span class="lesson-row-meta">${cp.status==='started'?'Resume':cp.status==='stale'?'Start again':'Start'}</span>${rowMark(rowProgress({solved:o?.answered,total:o?.total}),'answered')}</a></li>`;};
+// counts them (runOutcome); a stale run starts again, so it keeps the arrow. A finished checkpoint is not listed here,
+// except in Sensei mode, where every checkpoint has its row and a finished one shows its check.
+const checkpointRow=(cp,fresh=false)=>{const done=cp.status==='done',o=cp.status==='started'?runOutcome(lessons,cp.run):null;return `<li><a class="lesson-row is-checkpoint${done?' is-done':''}${fresh?' is-unlocked':''}" href="#checkpoint/${cp.n}"><span class="lesson-row-title">Checkpoint ${cp.n}${freshMark(fresh)}<span class="lesson-row-sub">A short closed-book check on the lessons you have finished</span></span>${done?'':`<span class="lesson-row-meta">${cp.status==='started'?'Resume':cp.status==='stale'?'Start again':'Start'}</span>`}${rowMark(rowProgress(done?{done}:{solved:o?.answered,total:o?.total}),done?'done':'answered')}</a></li>`;};
 // Learn reveals only the next reachable stones. Outlines carry no title or kanji and are not controls.
 function nodeCard(n,opts){const status=stoneOf(n.id,opts),art=gardenStone(data.nodes.indexOf(n),n.id);if(status==='hidden')return '';if(status==='outline')return `<span class="node outline" data-stone="${n.id}" data-state="outline" role="img" aria-label="Upcoming topic, locked"><span class="node-orb">${art}</span></span>`;return `<button type="button" class="node ${selected===n.id?'selected':''}" data-node="${n.id}" data-stone="${n.id}" data-state="open" aria-label="${esc(n.title)}" aria-pressed="${selected===n.id}"><span class="node-orb">${art}<span class="node-glyph" aria-hidden="true">${n.icon}</span></span><span class="node-name">${esc(n.title)}</span></button>`;}
 function field(){
@@ -415,9 +433,12 @@ function nodeView(id,from=''){
  const n=data.nodes.find(x=>x.id===id);if(!n)return missing();selected=id;
  const topics=openTopics(),index=topics.findIndex(x=>x.id===id),previous=topics[index-1],next=topics[index+1];
  // Each row says what its lesson is now: done, in progress, open, or locked (lessonLock), greyed with no reason. A due
- // checkpoint is a row above the first lesson it locks. Nothing here suggests where to go next.
- const cp=dueNow(),opts=lockOpts(cp),place=checkpointPlace(cp,opts),fresh=justUnlocked||{lessons:new Set(),checkpoint:null};justUnlocked=null;
- const rows=group=>group.lessons.map(l=>`${place?.before===l.id?checkpointRow(cp,fresh.checkpoint===cp.n):''}${lessonRow(l,lockOf(l.id,opts),fresh.lessons.has(l.id))}${place?.after===l.id?checkpointRow(cp,fresh.checkpoint===cp.n):''}`).join('');
+ // checkpoint is a row above the first lesson it locks. Nothing here suggests where to go next. In Sensei mode every
+ // checkpoint is a row where it sits (checkpointLocation: after its boundary lesson, once every stone is open), with its status.
+ const cp=dueNow(),opts=lockOpts(cp),fresh=justUnlocked||{lessons:new Set(),checkpoint:null};justUnlocked=null;
+ const cps=(sensei?checkpointStatus(data.path,lessons,cpOpts()):cp?[cp]:[]).map(c=>({cp:c,place:checkpointPlace(c,lockOpts(c))}));
+ const cpRows=(id,side)=>cps.filter(x=>x.place?.[side]===id).map(x=>checkpointRow(x.cp,fresh.checkpoint===x.cp.n)).join('');
+ const rows=group=>group.lessons.map(l=>`${cpRows(l.id,'before')}${lessonRow(l,lockOf(l.id,opts),fresh.lessons.has(l.id))}${cpRows(l.id,'after')}`).join('');
  const lessonList=topicLessonGroups(n,data.path,lessons.lessons).map(group=>`<h3 class="lesson-group">${esc(group.title)}</h3><ol class="lesson-rows">${rows(group)}</ol>`).join('');
  // Planned lessons: the outline titles not written yet (learn.mjs plannedTitles), never a lesson that became a practice.
  const planned=plannedTitles(n,lessons.lessons,practicesOf(lessons)).map(stage=>`<h3 class="lesson-group">${esc(stage.title)}</h3><ol class="lesson-rows">${stage.titles.map(plannedRow).join('')}</ol>`).join('');
@@ -1238,14 +1259,14 @@ function checkpointView(raw,unlocked=null){
  const n=Number(raw),list=checkpointStatus(data.path,lessons,cpOpts()),cp=list.find(c=>c.n===n);if(!cp)return missing();
  const run=runOf(state.checkpoints,n),from=checkpointFrom(cp),head=`<div class="checkpoint-page"><div class="panel-toolbar"><a class="back-link" href="#${esc(from)}">← ${esc(cpFromName(from))}</a><span class="small">Checkpoint ${n} of ${list.length}</span></div><h1>Checkpoint ${n}</h1>`;
  if(cp.status==='done')return checkpointResults(cp,head,from,unlocked);
- const begin=restart=>{const r=startCheckpoint(state.checkpoints,lessons,data.path,{n,completed:state.completed,progression:state.progression,now:Date.now(),restart});commit({...state,checkpoints:r.store});unitPlaces.delete(activeRoute);checkpointView(n);main.querySelector('#cp-run-title')?.focus();};
+ const begin=restart=>{const r=startCheckpoint(state.checkpoints,lessons,data.path,{n,completed:state.completed,progression:state.progression,now:Date.now(),restart,openAll:sensei});commit({...state,checkpoints:r.store});unitPlaces.delete(activeRoute);checkpointView(n);main.querySelector('#cp-run-title')?.focus();};
  if(cp.status==='stale'){
   main.innerHTML=head+`<section class="card checkpoint-intro" aria-labelledby="cp-stale-title"><h2 id="cp-stale-title">This checkpoint has changed</h2><p>Its questions were updated after you started, so this run cannot continue as it was. The answers you gave in it are not scored. Start again for a new set of questions.</p><div class="actions"><button type="button" class="button" id="checkpoint-restart">Start again</button></div></section></div>`;
   main.querySelector('#checkpoint-restart').onclick=()=>begin(true);
   return;
  }
  if(!run){
-  const pool=poolFor(data.path,n,{completed:state.completed,checkpoints:state.checkpoints}),size=checkpointSize(pool);
+  const pool=poolFor(data.path,n,{completed:state.completed,checkpoints:state.checkpoints,openAll:sensei}),size=checkpointSize(pool);
   main.innerHTML=head+`<section class="card checkpoint-intro" aria-labelledby="cp-intro-title"><span class="eyebrow">BEFORE YOUR NEXT LESSON</span><h2 id="cp-intro-title">A closed-book check on what you have learned</h2><p>${size.earlier?`${plural(size.total,'question')}: ${size.recent} on the lessons below and ${size.earlier} on earlier ones`:`${plural(size.total,'question')} on the lessons below`}, set in places those lessons did not use. Answer from memory: the words, examples and answers stay hidden until you finish, and each question takes one answer.</p><ul class="check-list checkpoint-lessons">${pool.recent.map(id=>`<li>${esc(lessonOf(id)?.title||id)}</li>`).join('')}</ul><p class="small">Nothing you have finished is reset, and the result shows what you could recall today, not a grade. You can leave and come back; your answers are kept.</p><div class="actions"><button type="button" class="button" id="checkpoint-start">Start checkpoint ${n}</button></div></section></div>`;
   main.querySelector('#checkpoint-start').onclick=()=>begin(false);
   return;
@@ -1637,19 +1658,20 @@ function libraryTabs(current){return `<nav class="library-tabs" aria-label="Libr
 function library(section='',from=''){
  const s=LIBRARY_SECTIONS.find(x=>x.id===section);if(!s)return missing();
  const found=discoveredWords(lessons.vocabulary,state.discovered).length;
- const meta={dictionary:found?plural(found,'word'):'',decks:state.decks.length?plural(state.decks.length,'deck'):''}[section]||'';
+ const meta={dictionary:sensei?plural(lessons.vocabulary.length,'word'):found?plural(found,'word'):'',decks:state.decks.length?plural(state.decks.length,'deck'):''}[section]||'';
  const body={
   reading:readingShelves,
   dictionary:dictionarySection,
   decks:decksSection,
-  progress:()=>`${evidenceSection()}${checkpointList()}<h2 class="section-label">Backup</h2><div class="card"><p>Your progress, words and decks are saved in this browser only. Export a backup to keep a copy or to move to another device. Restoring a backup replaces your current progress.</p><div class="actions"><button class="button secondary" id="export-progress">Export progress</button><label class="button secondary" for="import-progress">Restore a backup</label><input class="sr-only" type="file" id="import-progress" accept="application/json,.json"></div><p class="small" id="restore-status" aria-live="polite"></p>${docsShipped?'<p class="small"><a href="#guide">Course guide and documents</a></p>':''}</div>`}[section]();
+  // Sensei mode has nothing saved to back up: the note takes the place of Export and Restore.
+  progress:()=>`${evidenceSection()}${checkpointList()}<h2 class="section-label">Backup</h2><div class="card">${sensei?'<p class="small" id="sensei-backup-note">Sensei mode: nothing is saved, so there is no backup to export or restore.</p>':'<p>Your progress, words and decks are saved in this browser only. Export a backup to keep a copy or to move to another device. Restoring a backup replaces your current progress.</p><div class="actions"><button class="button secondary" id="export-progress">Export progress</button><label class="button secondary" for="import-progress">Restore a backup</label><input class="sr-only" type="file" id="import-progress" accept="application/json,.json"></div><p class="small" id="restore-status" aria-live="polite"></p>'}${docsShipped?'<p class="small"><a href="#guide">Course guide and documents</a></p>':''}</div>`}[section]();
  // The Dictionary's intro names the course word lists only when one shows.
  const intro=section==='dictionary'&&shownPacks().length?'Words you have tapped in lessons and readings, and the course word lists.':s.intro;
  main.innerHTML=libraryTabs(section)+heading(s.label,intro,meta)+`<div class="library-page is-${section}">${body}</div>`;
  bindDeckChoosers(main.querySelector('.library-page'));
  if(section==='dictionary')panelRefresh={panel:main,dictionary:bindDictionary().renderList};
  else if(section==='decks'){bindDecks();panelRefresh={panel:main,decks:renderDeckList};}
- else if(section==='progress'){bindBackup();showBuildStamp(main.querySelector('.library-page'));wirePagedRows('progress',{from});if(routeFocus)revealFocus=!scrollPositions.has('library/progress');}
+ else if(section==='progress'){if(!sensei)bindBackup();showBuildStamp(main.querySelector('.library-page'));wirePagedRows('progress',{from});if(routeFocus)revealFocus=!scrollPositions.has('library/progress');}
 }
 // The build stamp (build-stamp.mjs): one muted line at the end of Progress & backup, added only when build.json loads.
 function showBuildStamp(page){fetch('build.json').then(r=>r.ok?r.json():null).then(info=>{const line=stampLine(info);if(!line||!page.isConnected)return;const p=document.createElement('p');p.className='small build-stamp';p.textContent=line;page.append(p);}).catch(()=>{});}
@@ -1700,7 +1722,7 @@ const TOOL_ICONS={
  layout:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>'};
 function dictionarySection(){
  const button=(id,label,on=false)=>`<button type="button"${on?' class="active"':''} data-dict-filter="${id}" aria-pressed="${on}">${esc(label)}</button>`;
- const filter=`<div class="tabs dictionary-filter" role="group" aria-label="Words shown">${button('all','Your words',true)}${kanjiCollection().length?button('kanji','Kanji words'):''}${kanjiCharList().length?button('chars','Kanji'):''}${shownPacks().map(p=>button(p.id,`${p.label} · ${packWords(p.id).length}`)).join('')}</div>`;
+ const filter=`<div class="tabs dictionary-filter" role="group" aria-label="Words shown">${button('all',sensei?'All words':'Your words',true)}${kanjiCollection().length?button('kanji','Kanji words'):''}${kanjiCharList().length?button('chars','Kanji'):''}${shownPacks().map(p=>button(p.id,`${p.label} · ${packWords(p.id).length}`)).join('')}</div>`;
  const tool=(id,label,icon)=>`<button type="button" class="icon-button dictionary-tool" id="dictionary-${id}-button" aria-label="${label}" aria-expanded="false" aria-controls="dictionary-${id}-panel">${icon}${id==='filter'?'<span class="dictionary-tool-dot" aria-hidden="true"></span>':''}</button>`;
  return `<section class="dictionary" aria-label="Your dictionary">${storageNotice()}<div class="dictionary-main"><label class="form-label" for="dictionary-search">Search by kanji, kana, or English</label><div class="dictionary-toolbar"><input type="search" id="dictionary-search" autocomplete="off" spellcheck="false">${tool('filter','Filter words',TOOL_ICONS.filter)}${tool('layout','Change what entries show',TOOL_ICONS.layout)}</div><div class="card dictionary-panel" id="dictionary-filter-panel" hidden>${filter}</div><div class="card dictionary-panel" id="dictionary-layout-panel" role="group" aria-label="Change what entries show" hidden><p class="small">Tick the fields to show. Use the arrows to reorder them; the first is shown largest.</p><ol class="config-list" id="field-config"></ol><p class="sr-only" id="field-status" aria-live="polite"></p><h4 class="preview-label" id="preview-label">Preview</h4><div id="dictionary-preview" role="group" aria-labelledby="preview-label"></div></div><p class="small" id="dictionary-count" role="status" aria-live="polite"></p><div id="dictionary-list"></div></div></section>`;
 }
@@ -1729,9 +1751,16 @@ function bindDictionary(){
   if(filter==='kanji')return renderKanji();
   if(filter==='chars')return renderChars();
   if(shownPacks().some(p=>p.id===filter))return renderPack(filter);
+  if(sensei)return renderAll();
   const query=search.value.trim(),list=discoveredWords(lessons.vocabulary,state.discovered,query),count=total();
   $('#dictionary-count').textContent=!count?'':query?`${list.length} of ${count} words match “${query}”.`:`${count} word${count>1?'s':''} discovered.`;
   $('#dictionary-list').innerHTML=!count?`<div class="empty">No words yet. Select a marked word in a lesson or one of your <a href="#library/reading">readings</a>. It will appear here with its reading and meaning.</div>`:!list.length?`<div class="empty">No discovered word matches “${esc(query)}”. Try kana, kanji, or an English word.</div>`:`<div class="dictionary-list">${list.map(w=>dictionaryEntry(w,state.dictionary.fields)).join('')}</div>`;
+ }
+ // Sensei mode's first filter, All words: every word in the content, in lessons.vocabulary order, met or not.
+ function renderAll(){
+  const query=search.value.trim(),all=lessons.vocabulary,list=all.filter(w=>wordMatches(w,query));
+  $('#dictionary-count').textContent=query?`${list.length} of ${all.length} words match “${query}”.`:`${plural(all.length,'word')} in the course.`;
+  $('#dictionary-list').innerHTML=list.length?`<div class="dictionary-list">${list.map(w=>dictionaryEntry(w,state.dictionary.fields)).join('')}</div>`:`<div class="empty">No word matches “${esc(query)}”. Try kana, kanji, or an English word.</div>`;
  }
  function renderKanji(){
   const query=search.value.trim(),met=kanjiCollection(),list=met.filter(x=>wordMatches(words.get(x.id),query));
@@ -2192,7 +2221,8 @@ function practiceRun(id,partId,from=''){
 // length and mark (done, a progress ring, an arrow), or its title greyed (lockedRow) while it is not open (loop.mjs
 // partStates: part k opens once part k−1 is solved, and every part once the practice is finished). Back from a part, its
 // row takes focus. #practice/<id>/<part> plays one part with the unit machinery (partRun).
-const partStatesOf=p=>partStates(p,state.answers[p.id],!!state.loop.practices[p.id]);
+// Sensei mode opens every part, as a finished practice does (loop.mjs partRoute follows).
+const partStatesOf=p=>partStates(p,state.answers[p.id],sensei||!!state.loop.practices[p.id]);
 function partList(p,from=''){
  const topic=data.nodes.find(n=>n.id===lessonOf(p.home)?.node),parts=practiceParts(p),href=x=>`#practice/${p.id}/${x.id}`;
  const row=(s,k)=>s.open?`<li><a class="lesson-row${s.done?' is-done':''}" href="${esc(href(s))}"><span class="lesson-row-title">${esc(s.title)}</span>${s.done?'':`<span class="lesson-row-meta">${lengthHtml(minutesFor(parts[k].keys.length))}</span>`}${rowMark(rowProgress(s.done?{done:true}:s))}</a></li>`:lockedRow(s.title);
@@ -2445,7 +2475,7 @@ const kanjiPill=s=>s.status==='done'?'Done':s.status==='locked'?'Locked':s.read>
 // link to its board; a locked one the same row, faded and not a control (locks shown in place: no requirement, no link).
 // On arrival the current set (the first not done) takes focus, scrolled into view.
 function kanjiSets(){
- const list=setList(kanjiTrack,state.kanjiChars),current=currentSet(kanjiTrack,state.kanjiChars);
+ const list=setList(kanjiTrack,state.kanjiChars,kanjiOpts()),current=currentSet(kanjiTrack,state.kanjiChars);
  const row=s=>{
   const done=s.status==='done',inner=`<span class="kanji-set-no">${s.number}</span><span class="kanji-set-names"><span class="kanji-set-title" lang="ja">${esc(s.title)}</span><span class="kanji-set-en">${esc(s.en)}</span></span><span class="kanji-set-pill${done?' is-done':s.status==='locked'?' is-locked':''}">${done?'<span aria-hidden="true">✓ </span>':''}${kanjiPill(s)}</span>`;
   return s.status==='locked'?`<li class="kanji-set is-locked"><span class="kanji-set-row">${inner}</span></li>`:`<li class="kanji-set${done?' is-done':''}"><a class="kanji-set-row kanji-set-button" href="#kanji/${esc(s.id)}" data-set="${esc(s.id)}">${inner}</a></li>`;
@@ -2463,10 +2493,11 @@ function kanjiSets(){
 // or 'next' (the next cell, else the practice button); back from the practice its button takes focus.
 function kanjiBoard(id,{focus=null,from=''}={}){
  const set=kanjiSetOf(id);if(!set)return missing();
- const kc=state.kanjiChars,cells=boardCells(kanjiTrack,kc,id),status=setStatus(kanjiTrack,kc,id),all=cells.every(c=>c.state==='read');
+ const kc=state.kanjiChars,cells=boardCells(kanjiTrack,kc,id,kanjiOpts()),status=setStatus(kanjiTrack,kc,id,kanjiOpts()),all=cells.every(c=>c.state==='read');
  const hint=cells.some(c=>c.state==='next')?'Tap the red kanji':status==='done'?'':'Practise the lesson';
- const cell=c=>c.state==='hidden'?'<li class="kanji-cell is-blank" aria-hidden="true"></li>':`<li class="kanji-cell"><button type="button" class="kanji-card is-${c.state==='next'?'new':'read'}" data-char="${esc(c.char)}" aria-label="${esc(c.char)}${c.state==='next'?', read next':''}"><span class="kanji-card-word jp" lang="ja" style="${brushStyle(c.char)}">${esc(c.char)}</span></button></li>`;
- const practice=all?`<div class="kanji-done"><a class="button${status==='done'?' secondary':''}" id="kanji-practice" href="#kanji/${esc(id)}/practice">${status==='done'?'Practise again':'Practise the lesson'}</a></div>`:'';
+ // In Sensei mode a later kanji is plain paper too, but a button that opens its reading pages (any order).
+ const cell=c=>c.state==='hidden'?'<li class="kanji-cell is-blank" aria-hidden="true"></li>':c.state==='later'?`<li class="kanji-cell"><button type="button" class="kanji-card is-later" data-char="${esc(c.char)}" aria-label="${esc(c.char)}, not yet read"></button></li>`:`<li class="kanji-cell"><button type="button" class="kanji-card is-${c.state==='next'?'new':'read'}" data-char="${esc(c.char)}" aria-label="${esc(c.char)}${c.state==='next'?', read next':''}"><span class="kanji-card-word jp" lang="ja" style="${brushStyle(c.char)}">${esc(c.char)}</span></button></li>`;
+ const practice=all||sensei?`<div class="kanji-done"><a class="button${status==='done'?' secondary':''}" id="kanji-practice" href="#kanji/${esc(id)}/practice">${status==='done'?'Practise again':'Practise the lesson'}</a></div>`:'';
  main.innerHTML=`<div class="panel-toolbar"><a class="back-link" href="#kanji">← Kanji</a></div>${heading(set.en,set.title)}${kanjiFrame(`${set.en}: kanji`,hint,`<div class="kanji-set-board" data-kanji-set><ul class="kanji-grid" data-cols="5" aria-label="${esc(set.en)}">${cells.map(cell).join('')}</ul>${practice}</div>`)}`;
  main.querySelector('.page-heading p')?.setAttribute('lang','ja');
  main.querySelectorAll('[data-char]').forEach(b=>b.onclick=()=>kanjiRead(id,b.dataset.char));
@@ -2582,7 +2613,7 @@ function kanjiPractice(id){
  }
  // before: the store with every answer and the run still open; after: the store once finished.
  function finish(before,after){
-  const pr=practiceProgress(qs,before.run),missed=pr.missed.map(ch=>kanjiTrack.chars.get(ch)).filter(Boolean),opened=setsOpened(kanjiTrack,before,after).map(kanjiSetOf).filter(Boolean);
+  const pr=practiceProgress(qs,before.run),missed=pr.missed.map(ch=>kanjiTrack.chars.get(ch)).filter(Boolean),opened=setsOpened(kanjiTrack,before,after,kanjiOpts()).map(kanjiSetOf).filter(Boolean);
   count.remove();bar.remove();back.closest('.actions').remove();slip.setAttribute('aria-labelledby','kanji-finish-line');
   step.innerHTML=`<div class="kanji-finish"><h3 class="kanji-finish-line" id="kanji-finish-line" tabindex="-1"><strong>Done</strong> · ${pr.right} of ${pr.total} right</h3>${missed.length?`<p class="kanji-finish-missed"><strong>To read again:</strong> ${missed.map(e=>`<span lang="ja">${esc(e.char)}</span> ${esc(e.meanings.join(', '))}`).join('、')}</p>`:''}${opened.length?`<p class="kanji-unlock"><strong>Next lesson open:</strong> ${opened.map(s=>esc(s.en)).join(', ')}</p>`:''}<div class="actions"><a class="button" href="#kanji/${esc(id)}">Back to the lesson</a><button type="button" class="button secondary" id="kanji-again">Practise again</button></div></div>`;
   step.querySelector('#kanji-again').onclick=()=>{commit({...state,kanjiChars:startRun(state.kanjiChars,id,String(Date.now()))});kanjiPractice(id);routeFocus=null;main.querySelector('#kanji-q')?.focus();};
@@ -2608,5 +2639,20 @@ function registerTools(){
  for(const tool of definitions){try{Promise.resolve(ctx.registerTool(tool,{signal:lifecycle.signal})).catch(()=>{});}catch{}}
  window.addEventListener('pagehide',()=>lifecycle.abort(),{once:true});
 }
-async function start(){try{[data,lessons]=await Promise.all(['curriculum.json','lessons.json'].map(f=>fetch(f).then(r=>{if(!r.ok)throw Error();return r.json();})));if(!Array.isArray(state.completed)||!state.answers||!state.reviews)throw Error();kanjiPolicy=readKanjiPolicy(lessons);kanjiRules=rulesOf(kanjiPolicy);kanjiTrack=readKanjiCharacters(lessons);wordPacks=readWordPacks(lessons);const nouns=readProperNouns(lessons);kanjiIndex=kanjiWordIndex(lessons.vocabulary,{proper:[...PROPER_NOUNS.names,...PROPER_NOUNS.places,...nouns.names,...nouns.places]});kanjiCourse=readKanjiCourse(lessons,{wordIds:kanjiIndex.words});kanjiBank=trialBank(lessons,kanjiIndex);state.completed=state.completed.filter(id=>lessons.lessons.some(l=>l.id===id));Object.assign(state,readKanjiWords(state,{wordIds:kanjiIndex.words}),readKanjiCards(state,{wordIds:kanjiIndex.words,rules:kanjiRules}),readKanjiChars(state,{chars:kanjiTrack.chars,sets:kanjiSetIds()}),readRecallState(state,lessons),readDictionaryState(state,lessons.vocabulary),readLoopState(state,lessons),readDeckState(state,lessons.vocabulary,{practices:practiceIds()}),readReadingEvidence(state,lessons.vocabulary,{practices:practiceIds()}),readReviewState(state,lessons.vocabulary),readDailyState(state,lessons),readPatternState(state,lessons),readTransferState(state,lessons),readProgressionState(state,data.path,lessons.lessons),readCheckpointState(state,lessons,data.path),{outcomes:ensureLedger(readLedger(state).outcomes,Date.now())},readRecoveryState(state,lessons));state.answers=cleanReasons(state.answers);for(const k of ['production','listening','replies','conversations',...RETIRED_STATE])delete state[k];state=syncDeckDiscovery(state);state.recovery=migrateLeeches(state,lessons,Date.now());words=indexWords(lessons.vocabulary);storageFooter();kanjiSwitch();route();registerTools();window.addEventListener('hashchange',route);window.addEventListener('popstate',route);}catch{main.innerHTML='<div class="empty">The curriculum could not load. Please reload this page. If you opened the files directly, use the preview link instead.</div>';}}
+// normalize: a learner state as the app runs it, read against the loaded content (every store's reader, the retired
+// keys dropped). Startup runs it on the saved state; Sensei mode on a fresh one, and on the saved one again when it ends.
+function normalize(s){if(!Array.isArray(s.completed)||!s.answers||!s.reviews)throw Error();s.completed=s.completed.filter(id=>lessons.lessons.some(l=>l.id===id));Object.assign(s,readKanjiWords(s,{wordIds:kanjiIndex.words}),readKanjiCards(s,{wordIds:kanjiIndex.words,rules:kanjiRules}),readKanjiChars(s,{chars:kanjiTrack.chars,sets:kanjiSetIds()}),readRecallState(s,lessons),readDictionaryState(s,lessons.vocabulary),readLoopState(s,lessons),readDeckState(s,lessons.vocabulary,{practices:practiceIds()}),readReadingEvidence(s,lessons.vocabulary,{practices:practiceIds()}),readReviewState(s,lessons.vocabulary),readDailyState(s,lessons),readPatternState(s,lessons),readTransferState(s,lessons),readProgressionState(s,data.path,lessons.lessons),readCheckpointState(s,lessons,data.path),{outcomes:ensureLedger(readLedger(s).outcomes,Date.now())},readRecoveryState(s,lessons));s.answers=cleanReasons(s.answers);for(const k of ['production','listening','replies','conversations',...RETIRED_STATE])delete s[k];s=syncDeckDiscovery(s);s.recovery=migrateLeeches(s,lessons,Date.now());return s;}
+// Switching Sensei mode re-renders the current page on the other state: on, a fresh one; off, the saved one re-read
+// from localStorage (never written meanwhile). The route goes through the guard again, so a page locked for real lands
+// where it lives. The switch keeps focus and the page its scroll.
+const SENSEI_NOTE='<span class="sensei-note" id="sensei-note">Everything is open. Nothing is saved.</span>';
+function senseiSwitch(){const b=$('#sensei-switch');b.setAttribute('aria-pressed',String(sensei));document.body.classList.toggle('is-sensei',sensei);const note=$('#sensei-note');if(sensei&&!note)b.insertAdjacentHTML('beforebegin',SENSEI_NOTE);else if(!sensei&&note)note.remove();}
+function setSensei(on){
+ sensei=on;try{if(on)sessionStorage.setItem(SENSEI_KEY,'1');else sessionStorage.removeItem(SENSEI_KEY);}catch{}
+ state=normalize(on?freshState():loadSaved());deckUndo=null;justUnlocked=null;collectQueue=[];unitPlaces.clear();
+ senseiSwitch();storageFooter();kanjiSwitch();
+ const top=main.scrollTop;activeRoute='';route();main.scrollTop=top;$('#sensei-switch').focus({preventScroll:true});
+}
+$('#sensei-switch').onclick=()=>{if(data)setSensei(!sensei);};
+async function start(){try{[data,lessons]=await Promise.all(['curriculum.json','lessons.json'].map(f=>fetch(f).then(r=>{if(!r.ok)throw Error();return r.json();})));kanjiPolicy=readKanjiPolicy(lessons);kanjiRules=rulesOf(kanjiPolicy);kanjiTrack=readKanjiCharacters(lessons);wordPacks=readWordPacks(lessons);const nouns=readProperNouns(lessons);kanjiIndex=kanjiWordIndex(lessons.vocabulary,{proper:[...PROPER_NOUNS.names,...PROPER_NOUNS.places,...nouns.names,...nouns.places]});kanjiCourse=readKanjiCourse(lessons,{wordIds:kanjiIndex.words});kanjiBank=trialBank(lessons,kanjiIndex);state=normalize(state);words=indexWords(lessons.vocabulary);senseiSwitch();storageFooter();kanjiSwitch();route();registerTools();window.addEventListener('hashchange',route);window.addEventListener('popstate',route);}catch{main.innerHTML='<div class="empty">The curriculum could not load. Please reload this page. If you opened the files directly, use the preview link instead.</div>';}}
 start();

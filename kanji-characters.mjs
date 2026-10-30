@@ -403,7 +403,7 @@ export function finishRun(kc,now){
 // The run under way, or null.
 export const runOf=kc=>storeOf(kc).run??null;
 // The sets that were locked in `before` and are not in `after` (for the finish screen's unlock reveal and its notice):
-// with sets done in order, the one after the set just finished.
-export function setsOpened(track,before,after){
- return (track?.lessons??[]).filter(l=>setStatus(track,before,l.id)==='locked'&&setStatus(track,after,l.id)!=='locked').map(l=>l.id);
+// with sets done in order, the one after the set just finished. In Sensei mode (opts.openAll) nothing is locked, so none.
+export function setsOpened(track,before,after,opts={}){
+ return (track?.lessons??[]).filter(l=>setStatus(track,before,l.id,opts)==='locked'&&setStatus(track,after,l.id,opts)!=='locked').map(l=>l.id);
 }
