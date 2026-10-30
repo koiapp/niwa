@@ -1,0 +1,32 @@
+/* Notices (notices.mjs): small unlock popups, top right, outside #main so they survive route changes. Text only; the
+   card follows .unlock-reveal (white, line border, radius 14px, solid bottom-right grass shadow, no accent stripe). */
+.notices{position:fixed;top:72px;right:24px;z-index:90;display:grid;gap:10px;width:min(320px,calc(100vw - 32px));pointer-events:none}
+.notices>*{pointer-events:auto}
+.notices:empty{display:none}
+.notice{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:4px 4px 0 var(--grass);color:var(--ink);cursor:default;user-select:none;-webkit-user-select:none}
+.notice-glyph{width:34px;height:34px;border-radius:11px;background:#edf2d7;color:var(--forest);font-size:1.15rem;display:grid;place-items:center;line-height:1}
+.notice-glyph[lang=ja],.notice-kanji .notice-glyph,.notice-kanji-round .notice-glyph{font-family:'Noto Sans JP',sans-serif}
+.notice-body{display:grid;gap:2px;min-width:0;padding-top:1px}
+.notice-title{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--muted);line-height:1.5}
+.notice-name{font-size:.95rem;font-weight:650;line-height:1.4;overflow-wrap:anywhere}
+.notice-name[lang=ja]{font-family:'Noto Sans JP',sans-serif;font-size:1.05rem}
+.notice-where{font-size:.85rem;color:var(--muted);line-height:1.5}
+.notice-close{width:32px;height:32px;display:grid;place-items:center;padding:0;border:0;border-radius:8px;background:transparent;color:var(--muted);font-size:1.15rem;line-height:1}
+.notice-close:hover{background:#f3f6ed}
+.notice-close:focus-visible{outline:3px solid #d27731;outline-offset:2px}
+/* Motion: in from the right, out upwards. */
+.notice.is-entering{opacity:0;transform:translateX(16px)}
+.notice.is-shown{opacity:1;transform:none;transition:opacity .32s ease-out,transform .32s ease-out}
+.notice.is-leaving{opacity:0;transform:translateY(-6px);transition:opacity .24s ease-in,transform .24s ease-in}
+/* Reduced motion (the media query, or the renderer's reducedMotion option as .is-reduced): opacity only, near-instant.
+   styles.css turns every transition off under the media query; these keep a .01s one so transitionend still fires. */
+.notice.is-reduced.is-entering,.notice.is-reduced.is-shown,.notice.is-reduced.is-leaving{transform:none}
+.notice.is-reduced.is-shown,.notice.is-reduced.is-leaving{transition:opacity .01s linear!important}
+@media(prefers-reduced-motion:reduce){
+ .notice.is-entering,.notice.is-shown,.notice.is-leaving{transform:none}
+ .notice.is-shown,.notice.is-leaving{transition:opacity .01s linear!important}
+}
+@media(max-width:650px){
+ .notices{top:60px;left:12px;right:12px;width:auto}
+ .notice{padding:11px 12px}
+}

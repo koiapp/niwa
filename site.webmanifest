@@ -1,0 +1,24 @@
+{
+  "id": "./",
+  "name": "Niwa Course — Japanese for everyday life",
+  "short_name": "Niwa Course",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f1e8d4",
+  "theme_color": "#183e32",
+  "icons": [
+    {
+      "src": "assets/icons/koi-loop-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/koi-loop-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+/* Selected paper B from demos/paper-variations: ivory washi at the same texture scale, with the preview's clean
+   Yuji Syuku strokes. Loaded after kanji-paper.css so the paper treatment can evolve independently of the round. */
+.kanji-board{--kanji-art:url('assets/kanji/paper-washi.png');--kanji-art-size:768px 512px;--kanji-art-repeat:repeat;background-color:#f1e8d4;border-color:#6b604521;box-shadow:0 10px 25px #2b361713}
+.kanji-board::before{content:none}
+.kanji-board .kanji-grid{background-image:none}
+.kanji-board .kanji-card-word{font-family:'Niwa Brush',serif;font-weight:400;font-synthesis:none;color:#211d18;filter:none}
+.kanji-board .kanji-card.is-wrong .kanji-card-word{filter:blur(.4px)}

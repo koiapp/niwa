@@ -1,0 +1,186 @@
+/* The Kanji page's paper theme (docs/data-contract.md "Kanji paper"; kanji-paper.mjs has the ink filters and each word's
+   --n/--cols). The board is one sheet of aged paper folded into nine squares; each card's word is brushed on it in
+   vertical writing, a right answer gets the teacher's vermilion circle, a miss fades, and a red 庭 seal sits in the corner.
+   Every rule starts with .kanji-board, so it wins over styles.css without touching it. Decoration only: the trial keeps
+   the app's textbook font, and a card shows only its word (the circle and the faded ink are its state). In a profile with
+   kanji sets (data-contract.md "Kanji sets") the page is the set list, a set's board of ten (one character a square, the
+   next one in the seal's vermilion) and its reading pages and practice on slips of the trial's paper; see the end. */
+@font-face{font-family:'Niwa Brush';src:url('assets/kanji/brush.woff2') format('woff2');font-display:block}
+@property --kp-sweep{syntax:'<angle>';inherits:false;initial-value:360deg}
+
+/* The paper. paper.svg is a stand-in that tiles seamlessly at 900px. For the owner's single image, point --kanji-art at it
+   and set these two to cover and no-repeat; the board and the trial's slip both follow. */
+.kanji-board{--kanji-art:url('assets/kanji/paper.svg');--kanji-art-size:900px;--kanji-art-repeat:repeat}
+.kanji-board{--ink:#3b2d1c;--muted:#6b5a40;--line:#6b502a33;isolation:isolate;border-color:#6b502a2e;background-color:#efe5cd;background-size:var(--kanji-art-size);background-repeat:var(--kanji-art-repeat);box-shadow:0 8px 30px #3a2a120c,inset 0 0 0 1px #6b502a14;color:#3b2d1c}
+/* Age at the edges: uneven darkening, stronger in two corners. Everything else sits above it. */
+.kanji-board::before{content:'';position:absolute;inset:0;z-index:0;border-radius:inherit;pointer-events:none;background:radial-gradient(120% 90% at 50% 45%,transparent 58%,#8a632e1f 82%,#6e4a1d3d 100%),radial-gradient(40% 35% at 0% 100%,#7a55232a,transparent 70%),radial-gradient(35% 30% at 100% 0%,#7a552320,transparent 70%)}
+.kanji-board>:not(svg){position:relative;z-index:1}
+
+/* The frame in warm ink: text #3b2d1c, muted #6b5a40, rules #6b502a1f. */
+.kanji-board .kanji-topline{color:#3b2d1c;border-bottom-color:#6b502a1f}
+.kanji-board .kanji-subhead{color:#3b2d1c}
+.kanji-board .kanji-status,.kanji-board .kanji-round-line,.kanji-board .kanji-replay-note{color:#6b5a40}
+.kanji-board .kanji-round-line,.kanji-board .kanji-done{max-width:660px;margin-inline:auto}
+.kanji-board .kanji-known{background:#fffaf0b3;box-shadow:inset 0 0 0 1px #6b502a1f}
+.kanji-board .kanji-done .button.secondary{background:#fffaf0d9;border-color:#6b502a38;color:#3b2d1c}
+.kanji-board .kanji-done .button.secondary:hover{background:#fffdf7}
+.kanji-board .kanji-footnote{padding-inline:60px;border-top-color:#6b502a1f;color:#6b5a40}
+
+/* The sheet: nine squares with no gaps, and fold creases between them (a lit edge beside a soft shadow, like paper
+   folded and opened again), drawn as backgrounds so the grid stays nine cells. */
+.kanji-board .kanji-grid{max-width:660px;margin:0 auto;gap:0;background-image:linear-gradient(90deg,#fffaf0a8,#fffaf000 40%,#6d4f2721 60%,#6d4f2700),linear-gradient(90deg,#fffaf0a8,#fffaf000 40%,#6d4f2721 60%,#6d4f2700),linear-gradient(180deg,#fffaf0a8,#fffaf000 40%,#6d4f2721 60%,#6d4f2700),linear-gradient(180deg,#fffaf0a8,#fffaf000 40%,#6d4f2721 60%,#6d4f2700);background-size:3px 100%,3px 100%,100% 3px,100% 3px;background-position:calc(33.333% - .5px) 0,calc(66.666% + .5px) 0,0 calc(33.333% - .5px),0 calc(66.666% + .5px);background-repeat:no-repeat}
+.kanji-board .kanji-cell{--tilt:0deg;--dx:0px;--dy:0px;--density:.93;aspect-ratio:1/1.08;min-width:0}
+.kanji-board .kanji-cell.is-blank{min-height:0;border:0;border-radius:0}
+/* Small fixed differences per square, so the nine words look written by hand rather than set in type. */
+.kanji-board .kanji-cell:nth-child(1){--tilt:-1.2deg;--dx:2px;--dy:-1px;--density:.93}
+.kanji-board .kanji-cell:nth-child(2){--tilt:1.6deg;--dx:-3px;--dy:2px;--density:.9}
+.kanji-board .kanji-cell:nth-child(3){--tilt:-.5deg;--dx:1px;--dy:3px;--density:.96}
+.kanji-board .kanji-cell:nth-child(4){--tilt:.9deg;--dx:-2px;--dy:-2px;--density:.89}
+.kanji-board .kanji-cell:nth-child(5){--tilt:-1.8deg;--dx:3px;--dy:1px;--density:.95}
+.kanji-board .kanji-cell:nth-child(6){--tilt:.4deg;--dx:-4px;--dy:-3px;--density:.92}
+.kanji-board .kanji-cell:nth-child(7){--tilt:1.9deg;--dx:4px;--dy:-1px;--density:.88}
+.kanji-board .kanji-cell:nth-child(8){--tilt:-.9deg;--dx:-1px;--dy:2px;--density:.97}
+.kanji-board .kanji-cell:nth-child(9){--tilt:1.2deg;--dx:2px;--dy:-3px;--density:.91}
+
+/* A card is its square: no border or fill, a size container, the word alone in it. */
+.kanji-board .kanji-card,.kanji-board button.kanji-card:hover{border:0;background:none;box-shadow:none}
+.kanji-board .kanji-card{position:relative;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr);justify-items:center;align-items:center;gap:0;height:100%;min-height:0;padding:10px 6px;border-radius:14px;color:#17130f;container-type:size}
+.kanji-board .kanji-card:focus-visible{outline:3px solid #d27731;outline-offset:-3px;border-radius:14px}
+.kanji-board .kanji-card.is-inert{opacity:1}
+/* The word: brushed, written top to bottom. --n (characters per column) and --cols come from kanji-paper.mjs brushStyle;
+   a word of five or more characters wraps after --n into a second column to the left. */
+.kanji-board .kanji-card-word{grid-area:1/1;max-width:none;inline-size:max-content;max-inline-size:calc(var(--n,2) * .96em + .04em);font-family:'Niwa Brush',serif;font-weight:400;font-size:min(calc(62cqw / var(--cols,1)),calc(78cqh / var(--n,2)));line-height:1;letter-spacing:-.04em;writing-mode:vertical-rl;text-orientation:upright;text-align:start;overflow-wrap:normal;color:#17130f;opacity:var(--density);mix-blend-mode:multiply;filter:url(#kp-ink);transform:translate(var(--dx),var(--dy)) rotate(var(--tilt));transition:transform .3s ease,opacity .3s ease}
+@media(hover:hover){.kanji-board button.kanji-card:hover .kanji-card-word{transform:translate(var(--dx),calc(var(--dy) - 3px)) rotate(var(--tilt))}}
+/* Before the round opens: the met words in pale ink. */
+.kanji-board .kanji-card.is-inert .kanji-card-word{opacity:calc(var(--density) * .54)}
+/* A new kanji (a track character not met yet): the character inked in the seal's vermilion at full density, nothing
+   else; kanji-washi.css's ink colour is less specific. */
+.kanji-board .kanji-card.is-new .kanji-card-word{color:#c23b22;opacity:1}
+/* A right answer: the teacher's vermilion circle over the word, drawn once when it is fresh, anticlockwise from the
+   top as the brush moves (enso.svg's stroke). */
+.kanji-board .kanji-card.is-right::after{content:'';grid-area:1/1;width:min(88cqw,80cqh);height:min(88cqw,80cqh);background:url('assets/kanji/enso.svg') center/contain no-repeat;opacity:.75;mix-blend-mode:multiply;transform:rotate(-8deg);pointer-events:none}
+.kanji-board .kanji-card.is-fresh.is-right::after{-webkit-mask-image:conic-gradient(from 20deg,transparent calc(360deg - var(--kp-sweep)),#000 0);mask-image:conic-gradient(from 20deg,transparent calc(360deg - var(--kp-sweep)),#000 0);animation:kp-enso .9s cubic-bezier(.45,.05,.35,1) both}
+@keyframes kp-enso{from{--kp-sweep:0deg}to{--kp-sweep:360deg}}
+/* A miss: the ink lifts off the paper for today, fading as it closes. */
+.kanji-board .kanji-card.is-wrong .kanji-card-word{opacity:.22;filter:url(#kp-ink) blur(.6px)}
+.kanji-board .kanji-card.is-fresh.is-wrong .kanji-card-word{animation:kp-lift .9s ease-out both}
+@keyframes kp-lift{from{opacity:var(--density)}}
+
+/* The owner's seal, pressed in the corner of the footnote band. Its alt text is empty, so screen readers skip it. */
+.kanji-board::after{content:'庭';content:'庭' / '';position:absolute;right:16px;bottom:12px;z-index:2;display:grid;place-items:center;width:38px;height:38px;border-radius:6px;background:#c23b22;color:#f3e6cf;font-family:'Niwa Brush',serif;font-size:27px;font-weight:400;line-height:1;opacity:.82;mix-blend-mode:multiply;transform:rotate(-4deg);filter:url(#kp-seal);pointer-events:none}
+
+/* The trial: a slip of lighter paper in place of the grid. It holds any number of question blocks (whatever wraps a
+   question's choices), each set off from the last by a soft rule. The word stays in the textbook font the learner reads
+   in lessons; the brush is decoration only. */
+.kanji-board .kanji-trial{max-width:560px;margin:0 auto;padding:22px 22px 18px;border-radius:16px;background-color:#f6efdf;background-image:linear-gradient(#fffaf0bf,#fffaf0bf),var(--kanji-art);background-size:auto,var(--kanji-art-size);background-repeat:no-repeat,var(--kanji-art-repeat);box-shadow:0 10px 28px #3a2a121f,inset 0 0 0 1px #6b502a1f;color:#2f2416}
+.kanji-board .kanji-trial :is(ol,ul):has(.choices){list-style:none;margin:0;padding:0}
+.kanji-board .kanji-trial :has(.choices)+:has(.choices){margin-top:18px;padding-top:16px;border-top:1px solid #6b502a26}
+/* A block shown after hidden ones (a character trial's which-kanji question hides the blocks before it) has no rule. */
+.kanji-board .kanji-trial .kanji-trial-steps>li[hidden]+li:has(.choices){margin-top:0;padding-top:0;border-top:0}
+.kanji-board .kanji-trial-q{color:#2f2416}
+.kanji-board .kanji-trial-word{font-family:'Noto Sans JP',sans-serif;color:#2f2416}
+.kanji-board .kanji-trial .choice{background:#fffaf0cc;border-color:#6b502a38;color:#2f2416}
+.kanji-board .kanji-trial .choice:not([aria-disabled=true]):hover{background:#fffdf7;border-color:#8a6a3d}
+.kanji-board .kanji-trial .choice [lang=ja]{font-family:'Noto Sans JP',sans-serif}
+.kanji-board .kanji-trial .choice.is-right{background:#f8e7dbe6;border-color:#b4472c;box-shadow:inset 0 0 0 1px #b4472c}
+.kanji-board .kanji-trial .choice.is-wrong{background:#ece4d4e6;border-color:#8a7a62;box-shadow:inset 0 0 0 1px #8a7a62}
+.kanji-board .kanji-trial .answer-feedback.correct{background:#f9e9dde6;box-shadow:3px 3px 0 #c23b22}
+.kanji-board .kanji-trial .answer-feedback.incorrect{background:#eee6d6e6;box-shadow:3px 3px 0 #8a7a62}
+/* A character trial: the character large in the word slot, or the question's sentence at reading size with its mark
+   underlined in vermilion; the which-kanji options in a larger Japanese font. */
+.kanji-board .kanji-trial-char{font-size:3.4rem;font-weight:500;line-height:1.3}
+.kanji-board .kanji-trial-sentence{font-size:1.25rem;font-weight:400;line-height:2.4}
+.kanji-board .kanji-mark{text-decoration-color:#c23b22;text-decoration-thickness:2px;text-underline-offset:.32em}
+.kanji-board .kanji-trial .choice .kanji-choice-kanji{font-size:1.4rem;line-height:1.4}
+.kanji-board .kanji-trial .kanji-written{font-size:1.15rem}
+
+/* A new kanji's walkthrough: the trial's slip (it carries .kanji-trial too), one page at a time. The character in the
+   brush font, large, with its meanings; readings as a two-column list (On, Kun), the romaji and the book's variants
+   small in muted ink; the words with their readings above as plain ruby, the core ones starred in vermilion; Back and
+   Next under the page. */
+.kanji-board .kanji-lesson-page{min-height:12rem}
+.kanji-board .kanji-lesson-char{margin:6px 0 0;text-align:center;font-family:'Niwa Brush',serif;font-weight:400;font-synthesis:none;font-size:clamp(5.5rem,24vw,8.5rem);line-height:1.15;color:#17130f}
+.kanji-board .kanji-lesson-meanings{margin:0 0 6px;text-align:center;font-size:1.15rem}
+.kanji-board .kanji-lesson-h{margin:4px 0 12px;font-size:1.05rem;color:#2f2416}
+.kanji-board .kanji-lesson-readings{display:grid;gap:14px;margin:0}
+.kanji-board .kanji-lesson-readings>div{display:grid;grid-template-columns:3.2em minmax(0,1fr);gap:10px;align-items:baseline}
+.kanji-board .kanji-lesson-readings dt{font-size:.8rem;font-weight:650;letter-spacing:.08em;color:#6b5a40}
+.kanji-board .kanji-lesson-readings dd{margin:0}
+.kanji-board .kanji-lesson-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.kanji-board .kanji-lesson [lang=ja]{font-family:'Noto Sans JP',sans-serif}
+.kanji-board .kanji-lesson .kanji-lesson-char[lang=ja]{font-family:'Niwa Brush',serif}
+.kanji-board .kanji-lesson-kana{font-size:1.3rem}
+.kanji-board .kanji-lesson-romaji{font-size:.9rem;color:#6b5a40}
+.kanji-board .kanji-lesson-variant{margin-left:6px;font-size:.8rem;color:#6b5a40}
+.kanji-board .kanji-lesson-story{margin:0;font-size:1.02rem;line-height:1.8}
+.kanji-board .kanji-lesson-word{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;padding:4px 0 8px;border-bottom:1px solid #6b502a1f}
+.kanji-board .kanji-lesson-written{font-size:1.4rem;line-height:2.1}
+.kanji-board .kanji-lesson-written rt{font-size:.55em}
+.kanji-board .kanji-lesson-star{margin-left:-6px;color:#c23b22}
+.kanji-board .kanji-lesson-nav{display:flex;justify-content:space-between;gap:12px;margin-top:18px}
+.kanji-board .kanji-lesson-nav .button.secondary{background:#fffaf0d9;border-color:#6b502a38;color:#3b2d1c}
+
+/* The kanji sets (app.js kanjiSets, kanjiBoard, kanjiRead, kanjiPractice; base rules in styles.css).
+   A set's board: one sheet folded into ten squares, two rows of five, creased at each fifth and across the middle (:where
+   keeps the crease rule no stronger than kanji-washi.css's plain sheet, which wins when it is loaded), with ten small
+   per-square variations. A read kanji is ink; the next one vermilion (.is-new above); the rest plain paper. */
+.kanji-board .kanji-grid:where([data-cols="5"]){max-width:700px;background-image:linear-gradient(90deg,#fffaf0a8,#fffaf000 40%,#6d4f2721 60%,#6d4f2700),linear-gradient(90deg,#fffaf0a8,#fffaf000 40%,#6d4f2721 60%,#6d4f2700),linear-gradient(90deg,#fffaf0a8,#fffaf000 40%,#6d4f2721 60%,#6d4f2700),linear-gradient(90deg,#fffaf0a8,#fffaf000 40%,#6d4f2721 60%,#6d4f2700),linear-gradient(180deg,#fffaf0a8,#fffaf000 40%,#6d4f2721 60%,#6d4f2700);background-size:3px 100%,3px 100%,3px 100%,3px 100%,100% 3px;background-position:20% 0,40% 0,60% 0,80% 0,0 50%;background-repeat:no-repeat}
+.kanji-board .kanji-grid[data-cols="5"]{max-width:700px}
+.kanji-board .kanji-grid[data-cols="5"] .kanji-cell:nth-child(1){--tilt:-1.1deg;--dx:2px;--dy:-1px;--density:.93}
+.kanji-board .kanji-grid[data-cols="5"] .kanji-cell:nth-child(2){--tilt:1.4deg;--dx:-2px;--dy:2px;--density:.9}
+.kanji-board .kanji-grid[data-cols="5"] .kanji-cell:nth-child(3){--tilt:-.4deg;--dx:1px;--dy:2px;--density:.96}
+.kanji-board .kanji-grid[data-cols="5"] .kanji-cell:nth-child(4){--tilt:.8deg;--dx:-1px;--dy:-2px;--density:.89}
+.kanji-board .kanji-grid[data-cols="5"] .kanji-cell:nth-child(5){--tilt:-1.6deg;--dx:2px;--dy:1px;--density:.95}
+.kanji-board .kanji-grid[data-cols="5"] .kanji-cell:nth-child(6){--tilt:.5deg;--dx:-3px;--dy:-2px;--density:.92}
+.kanji-board .kanji-grid[data-cols="5"] .kanji-cell:nth-child(7){--tilt:1.7deg;--dx:3px;--dy:-1px;--density:.88}
+.kanji-board .kanji-grid[data-cols="5"] .kanji-cell:nth-child(8){--tilt:-.8deg;--dx:-1px;--dy:2px;--density:.97}
+.kanji-board .kanji-grid[data-cols="5"] .kanji-cell:nth-child(9){--tilt:1.1deg;--dx:2px;--dy:-2px;--density:.91}
+.kanji-board .kanji-grid[data-cols="5"] .kanji-cell:nth-child(10){--tilt:-1.3deg;--dx:-2px;--dy:1px;--density:.94}
+.kanji-board .kanji-set-board .kanji-done{margin-top:18px}
+/* The set list: rows of lighter paper, the Japanese title brushed; a locked row faded, plain paper. The pills in warm
+   ink; Done in the seal's colours. */
+.kanji-board .kanji-subhead{margin-bottom:10px}
+.kanji-board .kanji-set-row{border-color:#6b502a2e;background:#fffaf0b3;color:#3b2d1c;box-shadow:0 1px 0 #6b502a14}
+.kanji-board a.kanji-set-row:hover{border-color:#8a6a3d;background:#fffdf7}
+.kanji-board a.kanji-set-row:focus-visible{outline:3px solid #d27731;outline-offset:2px}
+.kanji-board .kanji-set.is-locked .kanji-set-row{border-color:#6b502a2e;background:transparent;box-shadow:none;opacity:.5}
+.kanji-board .kanji-set-no,.kanji-board .kanji-set-en{color:#6b5a40}
+.kanji-board .kanji-set-title{font-family:'Niwa Brush',serif;font-weight:400;font-synthesis:none;font-size:1.4rem;color:#17130f}
+.kanji-board .kanji-set-pill{background:#f3e9d2e6;color:#3b2d1c;box-shadow:inset 0 0 0 1px #6b502a26}
+.kanji-board .kanji-set-pill.is-done{background:#f8e7dbe6;color:#8e2f1b;box-shadow:inset 0 0 0 1px #c23b2240}
+.kanji-board .kanji-set-pill.is-locked{background:transparent}
+/* Red is the kanji being learned (the seal's vermilion), black every other reading. */
+.kanji-board .kanji-hot{color:#c23b22}
+/* The reading pages' sentences; the run's slots, progress bar and finish on the slip. */
+.kanji-board .kanji-lesson-sentence{padding:4px 0 10px;border-bottom:1px solid #6b502a1f}
+.kanji-board .kanji-lesson-ja{font-size:1.25rem;line-height:2.3}
+.kanji-board .kanji-lesson-written rt.kanji-hot,.kanji-board .kanji-lesson-ja rt.kanji-hot{font-weight:600}
+.kanji-board .kanji-trial-readings{font-size:1.7rem;font-weight:500}
+.kanji-board .kanji-trial-sentence rt{font-size:.55em}
+.kanji-board .kanji-run-progress{background:#6b502a1f;color:#8a6a3d}
+.kanji-board .kanji-run-progress::-webkit-progress-bar{background:#6b502a1f}
+.kanji-board .kanji-run-progress::-webkit-progress-value{background:#8a6a3d}
+.kanji-board .kanji-run-progress::-moz-progress-bar{background:#8a6a3d}
+.kanji-board .kanji-finish-line{color:#2f2416}
+.kanji-board .kanji-finish-missed,.kanji-board .kanji-unlock{padding:8px 12px;border-radius:10px;background:#fffaf0b3;box-shadow:inset 0 0 0 1px #6b502a1f}
+.kanji-board .kanji-finish [lang=ja]{font-family:'Noto Sans JP',sans-serif}
+.kanji-board .kanji-finish .button.secondary,.kanji-board .kanji-run .button.secondary{background:#fffaf0d9;border-color:#6b502a38;color:#3b2d1c}
+
+@media(max-width:560px){
+ .kanji-board .kanji-body{padding:12px 8px 16px}
+ .kanji-board .kanji-card{padding:6px 2px}
+ /* The strong ink looks blotchy on small words: a gentler filter. */
+ .kanji-board .kanji-card-word{filter:url(#kp-ink-fine)}
+ .kanji-board .kanji-card.is-wrong .kanji-card-word{filter:url(#kp-ink-fine) blur(.4px)}
+ .kanji-board .kanji-trial{padding:16px 14px 14px;border-radius:14px}
+ .kanji-board .kanji-footnote{padding-inline:48px}
+ .kanji-board::after{width:30px;height:30px;font-size:21px;right:12px;bottom:10px}
+ /* A set's board stays five across: the squares shrink and the brush follows each one's size. */
+ .kanji-board .kanji-grid[data-cols="5"] .kanji-card{padding:4px 1px}
+ .kanji-board .kanji-set-title{font-size:1.25rem}
+}
+@media(prefers-reduced-motion:reduce){
+ .kanji-board .kanji-card-word{transition:none}
+ .kanji-board .kanji-card.is-fresh::after,.kanji-board .kanji-card.is-fresh .kanji-card-word{animation:none}
+ .kanji-board .kanji-card.is-fresh.is-right::after{-webkit-mask-image:none;mask-image:none}
+}

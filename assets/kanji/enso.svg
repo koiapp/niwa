@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+ <!-- The teacher's vermilion circle on a right answer (kanji-paper.css .kanji-card.is-right::after): one loaded stroke that
+      starts heavy at the top, runs anticlockwise, thins round the bottom and lifts off with a dry tail. The same ink filter
+      as the brushed words (kanji-paper.mjs kp-ink), kept in this file because an SVG used as an image has its own defs. -->
+ <defs>
+  <filter id="ink" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB">
+   <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="7" result="warp"/>
+   <feDisplacementMap in="SourceGraphic" in2="warp" scale="3.2" xChannelSelector="R" yChannelSelector="G" result="rough"/>
+   <feMorphology in="rough" operator="dilate" radius="0.6" result="thick"/>
+   <feTurbulence type="fractalNoise" baseFrequency="0.22 0.6" numOctaves="3" seed="13" result="streak"/>
+   <feColorMatrix in="streak" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -2.6 0 0 0 2.35" result="streakA"/>
+   <feComposite in="thick" in2="streakA" operator="in" result="dry"/>
+   <feGaussianBlur in="thick" stdDeviation="1.4" result="bleed"/>
+   <feComponentTransfer in="bleed" result="bleedA"><feFuncA type="linear" slope=".3"/></feComponentTransfer>
+   <feMerge><feMergeNode in="bleedA"/><feMergeNode in="dry"/></feMerge>
+  </filter>
+ </defs>
+ <g filter="url(#ink)" fill="none" stroke="#c23b22" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M62 13 C36 8 12 26 13 52 C14 76 34 91 57 88 C78 85 91 66 87 45 C85 33 78 24 70 19" stroke-width="4.2"/>
+  <path d="M60 14 C38 12 18 28 17 50" stroke-width="6"/>
+  <path d="M86 42 C86 34 82 27 76 22" stroke-width="2" opacity=".7"/>
+ </g>
+</svg>

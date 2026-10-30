@@ -1,0 +1,141 @@
+{
+  "title": "Niwa watercolor koi",
+  "description": "Descriptive palette names for fifteen painted koi assets.",
+  "koi": [
+    {
+      "id": "crown",
+      "name": "Crimson crown",
+      "description": "Pearl ivory with a single vermilion crown mark.",
+      "original": false,
+      "file": "koi-crown.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "id": "porcelain",
+      "name": "Porcelain & ink",
+      "description": "Ivory with sparse indigo brushmarks.",
+      "original": false,
+      "file": "koi-porcelain.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "id": "tricolor",
+      "name": "Vermilion & charcoal",
+      "description": "Coral red, warm ivory, and smoky charcoal.",
+      "original": false,
+      "file": "koi-tricolor.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "id": "apricot",
+      "name": "Apricot",
+      "description": "Soft peach-orange and cream fins.",
+      "original": false,
+      "file": "koi-apricot.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "id": "silver",
+      "name": "Silver pearl",
+      "description": "Pale pearl with cool silver-blue washes.",
+      "original": false,
+      "file": "koi-silver.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "id": "indigo",
+      "name": "Indigo",
+      "description": "Blue-gray back, coral cheeks, and ivory fins.",
+      "original": false,
+      "file": "koi-indigo.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "id": "copper",
+      "name": "Copper tea",
+      "description": "Earthy copper-brown and honey-edged fins.",
+      "original": false,
+      "file": "koi-copper.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "id": "saffron-ink",
+      "name": "Saffron & ink",
+      "description": "Butter yellow crossed by dark ink patches.",
+      "original": false,
+      "file": "koi-saffron-ink.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "id": "amber",
+      "name": "Amber freckles",
+      "description": "Honey-orange with scattered sepia flecks.",
+      "original": false,
+      "file": "koi-amber.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "id": "red-white",
+      "name": "Persimmon",
+      "description": "Rich persimmon red with broad ivory openings.",
+      "original": false,
+      "file": "koi-red-white.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "id": "moonlight",
+      "name": "Moonlit ink",
+      "description": "Deep charcoal with pearl-white islands.",
+      "original": false,
+      "file": "koi-moonlight.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "id": "butterfly",
+      "name": "Ivory butterfly",
+      "description": "Flowing ivory fins and a small coral crown.",
+      "original": false,
+      "file": "koi-butterfly.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "id": "coral",
+      "name": "Coral & ivory",
+      "description": "Warm ivory with soft coral-red islands.",
+      "original": true,
+      "file": "koi-coral.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "id": "ink",
+      "name": "Ink & ivory",
+      "description": "Pearl white with smoky ink markings.",
+      "original": true,
+      "file": "koi-ink.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "id": "gold",
+      "name": "Golden cream",
+      "description": "Honey-gold washes and pale fan fins.",
+      "original": true,
+      "file": "koi-gold.webp",
+      "width": 384,
+      "height": 384
+    }
+  ]
+}

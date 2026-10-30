@@ -1,0 +1,862 @@
+{
+  "version": 1,
+  "title": "Niwa Course",
+  "profile": {
+    "focus": "つなぐにほんご 初級1, the classroom course: one stone per textbook lesson, one app lesson per part",
+    "dailyMinutes": [
+      20,
+      30
+    ],
+    "assumed": [
+      "hiragana",
+      "katakana"
+    ],
+    "kanji": "Kana only in Lessons 1–5, as the book prints them; the book’s kanji from Lesson 6, with furigana."
+  },
+  "levels": [
+    {
+      "name": "Lessons 1–5",
+      "goal": "Greet, shop, get around, talk about the day and eat out, in polite Japanese written in kana."
+    },
+    {
+      "name": "Lessons 6–8",
+      "goal": "Adjectives, plans and the first kanji; casual talk with friends."
+    },
+    {
+      "name": "Lessons 9–10",
+      "goal": "The て form: instructions, rules and states; introducing people and places."
+    },
+    {
+      "name": "Lessons 11–15",
+      "goal": "Thanks, requests, invitations, advice and apologies."
+    }
+  ],
+  "rows": [
+    {
+      "label": "",
+      "nodes": [
+        "l01",
+        "l02",
+        "l03"
+      ]
+    },
+    {
+      "label": "",
+      "nodes": [
+        "l04",
+        "l05",
+        "l06"
+      ]
+    },
+    {
+      "label": "",
+      "nodes": [
+        "l07",
+        "l08",
+        "l09"
+      ]
+    },
+    {
+      "label": "",
+      "nodes": [
+        "l10",
+        "l11",
+        "l12"
+      ]
+    },
+    {
+      "label": "",
+      "nodes": [
+        "l13",
+        "l14",
+        "l15"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "id": "l01",
+      "title": "First Greetings",
+      "icon": "あ",
+      "level": 0,
+      "prerequisites": [],
+      "summary": "Meet people at a party, greet the neighbours and say where you come from.",
+      "outcomes": [
+        "Greet someone you meet for the first time and give your name.",
+        "Ask and say someone’s country and work.",
+        "Greet neighbours at different times of day.",
+        "Make small talk about the weather, and ask someone to say it again or more slowly.",
+        "Greet the neighbours you will rely on when you move in.",
+        "Ask and say when and from where someone came."
+      ],
+      "stages": [
+        {
+          "title": "First Greetings",
+          "focus": "Meet people, greet the neighbours and say where you come from.",
+          "lessons": [
+            "Nice to Meet You",
+            "Nice Weather Today",
+            "New Next Door"
+          ]
+        }
+      ],
+      "expansions": [
+        {
+          "title": "Practices and books",
+          "scope": "Countries and jobs, numbers to 100, phone numbers and months, and the interview-and-introduce activity; a book for each part, the last one three self-introductions.",
+          "readiness": "Finish the part each practice or book is homed at."
+        }
+      ],
+      "capstone": "Interview a classmate about their name, country and work, then introduce them to the group (the アクティビティー).",
+      "transfer": "Out Shopping opens with これ, which New Next Door meets when handing over a gift; every later stone starts with these greetings.",
+      "status": "sample"
+    },
+    {
+      "id": "l02",
+      "title": "Out Shopping",
+      "icon": "か",
+      "level": 0,
+      "prerequisites": [
+        "l01"
+      ],
+      "summary": "Order at a counter by price and number, find departments and goods in a department store, and ask for another colour or size.",
+      "outcomes": [
+        "Tell the clerk what you want and how many, and ask the price.",
+        "Point things out with これ, それ and あれ, and with この, その and あの before a noun.",
+        "Ask where a department is and which floor it is on.",
+        "Ask where goods are, and follow となり, まえ and うしろ.",
+        "Ask whether the shop has another colour or size, and say what is wrong with it.",
+        "Leave a shop politely without buying."
+      ],
+      "stages": [
+        {
+          "title": "Out Shopping",
+          "focus": "Buy things at a counter, find your way round a department store and ask for another colour or size.",
+          "lessons": [
+            "This One, Please",
+            "Which Floor?",
+            "In Black, Please"
+          ]
+        }
+      ],
+      "expansions": [
+        {
+          "title": "Practices and books",
+          "scope": "Prices to 10,000 and counting to ten, store floors, more adjectives and いい, and the compare-prices activity; a book for each part, and a department-store sale flyer after the よみましょう.",
+          "readiness": "Finish the part each practice or book is homed at."
+        }
+      ],
+      "capstone": "Compare the prices of eggs, toilet paper and taxis across countries and present them (the アクティビティー); find each shopper’s floor and price on a sale flyer (よみましょう).",
+      "transfer": "Trains and Buses reuses prices and どこですか on the way to the station, where these こ・そ・あ words become places: ここ, そこ, あそこ.",
+      "status": "sample"
+    },
+    {
+      "id": "l03",
+      "title": "Trains and Buses",
+      "icon": "で",
+      "level": 0,
+      "prerequisites": [
+        "l02"
+      ],
+      "summary": "Say how you get somewhere and what you want to do, find a bus stop and the next bus, and ask the fare, the time and the platform at a station.",
+      "outcomes": [
+        "Ask and say how you get somewhere: by train, by bus or on foot.",
+        "Say what you want or don’t want to do with ～たいです.",
+        "Ask where a bus stop, a station or a shop is, and say what is near.",
+        "Ask the time, when the next bus comes and which number bus to take.",
+        "Ask how long a trip takes, and the fare and the platform.",
+        "Say where you are, and ask whether someone is there."
+      ],
+      "stages": [
+        {
+          "title": "Trains and Buses",
+          "focus": "Get around town by train and bus: how to go, when the bus comes, the fare and the platform.",
+          "lessons": [
+            "How Do You Get There?",
+            "When's the Bus?",
+            "Which Platform?"
+          ]
+        }
+      ],
+      "expansions": [
+        {
+          "title": "Practices and books",
+          "scope": "Places in town and who you go with; clock times, days and rooms; fares, travel times and who is where; and the plan-a-route activity. A book for each part, and a departure board after the よみましょう.",
+          "readiness": "Finish the part each practice or book is homed at."
+        }
+      ],
+      "capstone": "Plan a trip on a simple rail map, note where, how and how much, and present the route (the アクティビティー); then find the next train and its platform on a departure board (よみましょう).",
+      "transfer": "Day to Day builds daily routines on the clock times and ～から ～まで from this stone, and Eating Out returns to ～たいです when ordering a meal.",
+      "status": "sample"
+    },
+    {
+      "id": "l04",
+      "title": "Day to Day",
+      "icon": "ま",
+      "level": 0,
+      "prerequisites": [
+        "l03"
+      ],
+      "summary": "Tell the teacher about your mornings, talk about lunch at the office, and share the work of cooking together.",
+      "outcomes": [
+        "Talk about your daily life: what you do and where.",
+        "Say at what time you do things, and from when to when.",
+        "Say what you did and did not do.",
+        "Ask and say who did something, and whose something is.",
+        "Say what you will do when working with others.",
+        "Ask and say where a tool or other thing is."
+      ],
+      "stages": [
+        {
+          "title": "Day to Day",
+          "focus": "Talk about your day, what you did and the work you share with others.",
+          "lessons": [
+            "A School Morning",
+            "Do You Cook?",
+            "Every Week"
+          ]
+        }
+      ],
+      "expansions": [
+        {
+          "title": "Practices and books",
+          "scope": "How often and with whom, the past week, and where things are; the アクティビティー becomes a survey of classmates’ days; a book for each part, the last an email exchange after the よみましょう.",
+          "readiness": "Finish the part each practice or book is homed at."
+        }
+      ],
+      "capstone": "Read a classmate’s timetable, narrate their day from tiles and ask follow-up questions (the アクティビティー); read an email exchange planning a weekend (よみましょう).",
+      "transfer": "Eating Out invites people out with ～ませんか and uses the past tense from Do You Cook? to talk about meals.",
+      "status": "sample"
+    },
+    {
+      "id": "l05",
+      "title": "Eating Out",
+      "icon": "し",
+      "level": 0,
+      "prerequisites": [
+        "l04"
+      ],
+      "summary": "Invite friends out to eat, get a table, order from a menu and talk about how the food tastes.",
+      "outcomes": [
+        "Invite someone to eat or drink, and accept or turn down an invitation.",
+        "Tell the restaurant staff how many you are and which seats you want.",
+        "Talk about what to order from a menu, and decide with ～に します.",
+        "Ask what something on the menu is.",
+        "Say how food tastes, including what it is not, and add a “but”.",
+        "Say what you want."
+      ],
+      "stages": [
+        {
+          "title": "Eating Out",
+          "focus": "Invite friends out, get a table, order from a menu and talk about the food.",
+          "lessons": [
+            "A Table for Three",
+            "I'll Have the Cake",
+            "Delicious!"
+          ]
+        }
+      ],
+      "expansions": [
+        {
+          "title": "Practices and books",
+          "scope": "Planning a meal with ～ましょうか, ordering from a menu, taste words with ～たいです and そして, and the plan-a-meal-out activity; a book for each part, the last one a café menu flyer.",
+          "readiness": "Finish the part each practice or book is homed at."
+        }
+      ],
+      "capstone": "Plan a meal out with friends: invite them, get a table, order and talk about the food, then tell the group the plan (the アクティビティー); read a café menu flyer and an order (よみましょう).",
+      "transfer": "Plans and Trips turns the taste words into past and negative adjectives and talks about plans and what you did; invitations come back in Invitations.",
+      "status": "sample"
+    },
+    {
+      "id": "l06",
+      "title": "Plans and Trips",
+      "icon": "行",
+      "level": 1,
+      "prerequisites": [
+        "l05"
+      ],
+      "summary": "Talk about holiday plans, what a place is like and how a trip went.",
+      "outcomes": [
+        "Ask and answer about holiday plans, and give a simple reason.",
+        "Ask and say what a travel spot is like, and introduce its specialities.",
+        "Ask and say what someone did on a trip, and ask and give impressions."
+      ],
+      "stages": [
+        {
+          "title": "Plans and Trips",
+          "focus": "Talk about holiday plans, what a place is like and how a trip went.",
+          "lessons": [
+            "Going on a Trip",
+            "What's Kyoto Like?",
+            "How Was the Trip?"
+          ]
+        }
+      ],
+      "expansions": [
+        {
+          "title": "Practices and books",
+          "scope": "One general practice and one general book per part; the アクティビティー becomes a practice on the last part, and the よみましょう a book.",
+          "readiness": "Finish the part the practice or book is homed at."
+        }
+      ],
+      "capstone": "Talk about sights you want to visit and give a short talk about a place you went (the アクティビティー); read a diary of a trip (よみましょう).",
+      "transfer": "The first kanji arrive here; Among Friends starts casual speech.",
+      "status": "sample"
+    },
+    {
+      "id": "l07",
+      "title": "Among Friends",
+      "icon": "友",
+      "level": 1,
+      "prerequisites": [
+        "l06"
+      ],
+      "summary": "Chat casually with friends about weekend plans, joining in and things you don’t know.",
+      "outcomes": [
+        "Talk about weekend plans with a teacher, and with friends.",
+        "Tell a teacher, and a friend, whether you will join a weekend event.",
+        "Ask a teacher or a friend about something you don’t know, and say how you feel."
+      ],
+      "stages": [
+        {
+          "title": "Among Friends",
+          "focus": "Chat casually with friends about weekend plans, joining in and things you don’t know.",
+          "lessons": [
+            "Plans This Weekend?",
+            "I'm Not Going",
+            "What's This?"
+          ]
+        }
+      ],
+      "expansions": [
+        {
+          "title": "Practices and books",
+          "scope": "One general practice and one general book per part; the アクティビティー becomes a practice on the last part, and the よみましょう a book.",
+          "readiness": "Finish the part the practice or book is homed at."
+        }
+      ],
+      "capstone": "Ask polite question cards casually, inviting a friend to a film (the アクティビティー); read survey charts on foreign friends (よみましょう).",
+      "transfer": "Catching Up adds the た form for casual talk about the past.",
+      "status": "sample"
+    },
+    {
+      "id": "l08",
+      "title": "Catching Up",
+      "icon": "食",
+      "level": 1,
+      "prerequisites": [
+        "l07"
+      ],
+      "summary": "Tell friends what you did and how it went, in casual speech.",
+      "outcomes": [
+        "Ask and tell friends what they did at the weekend.",
+        "Talk with friends about what you did on a day off and how it was.",
+        "Report politely to a group what you talked about casually."
+      ],
+      "stages": [
+        {
+          "title": "Catching Up",
+          "focus": "Tell friends what you did and how it went, in casual speech.",
+          "lessons": [
+            "We Played Football",
+            "How Was It?"
+          ]
+        }
+      ],
+      "expansions": [
+        {
+          "title": "Practices and books",
+          "scope": "One general practice and one general book per part; the アクティビティー becomes a practice on the last part, and the よみましょう a book.",
+          "readiness": "Finish the part the practice or book is homed at."
+        }
+      ],
+      "capstone": "Talk casually about a match and the holidays, then report to the group politely (the アクティビティー); read a casual email about a trip (よみましょう).",
+      "transfer": "Rules and Instructions returns to polite speech with the て form.",
+      "status": "sample"
+    },
+    {
+      "id": "l09",
+      "title": "Rules and Instructions",
+      "icon": "語",
+      "level": 2,
+      "prerequisites": [
+        "l08"
+      ],
+      "summary": "Follow rules and instructions at school and at work, and say what you are doing.",
+      "outcomes": [
+        "Understand rubbish-disposal instructions, apologise for a mistake and ask the landlord about the rules.",
+        "Understand test instructions, and ask a teacher or the person in charge what is allowed.",
+        "Understand a teacher’s instructions, and say what others are doing."
+      ],
+      "stages": [
+        {
+          "title": "Rules and Instructions",
+          "focus": "Follow rules and instructions at school and at work, and say what you are doing.",
+          "lessons": [
+            "Not There, Please",
+            "No Dictionaries",
+            "Looking at the Textbook"
+          ]
+        }
+      ],
+      "expansions": [
+        {
+          "title": "Practices and books",
+          "scope": "One general practice and one general book per part; the アクティビティー becomes a practice on the last part, and the よみましょう a book.",
+          "readiness": "Finish the part the practice or book is homed at."
+        }
+      ],
+      "capstone": "Explain signs and marks, then design and present your own sign (the アクティビティー); match short rule lists to places (よみましょう).",
+      "transfer": "People and Places uses ～て います for clothes and states.",
+      "status": "sample"
+    },
+    {
+      "id": "l10",
+      "title": "People and Places",
+      "icon": "子",
+      "level": 2,
+      "prerequisites": [
+        "l09"
+      ],
+      "summary": "Point people out, say where you live and describe your town.",
+      "outcomes": [
+        "Ask and say who someone is from their clothes or actions, and introduce someone.",
+        "Introduce family and friends, and ask and say where someone lives, their job and whether they are married.",
+        "Introduce your town simply, and say how you feel about something."
+      ],
+      "stages": [
+        {
+          "title": "People and Places",
+          "focus": "Point people out, say where you live and describe your town.",
+          "lessons": [
+            "Which One Is She?",
+            "My Sister Lives in Beijing",
+            "A Town in the South"
+          ]
+        }
+      ],
+      "expansions": [
+        {
+          "title": "Practices and books",
+          "scope": "One general practice and one general book per part; the アクティビティー becomes a practice on the last part, and the よみましょう a book.",
+          "readiness": "Finish the part the practice or book is homed at."
+        }
+      ],
+      "capstone": "Introduce a friend for a part-time job from a profile card (the アクティビティー); guess jobs from two first-person texts (よみましょう).",
+      "transfer": "Saying Thanks moves to giving and receiving.",
+      "status": "sample"
+    },
+    {
+      "id": "l11",
+      "title": "Saying Thanks",
+      "icon": "言",
+      "level": 3,
+      "prerequisites": [
+        "l10"
+      ],
+      "summary": "Thank people for gifts and help, and say who did what for you.",
+      "outcomes": [
+        "Discuss what to give as a present, and thank someone for a present.",
+        "Thank someone for a compliment, and explain who gave or made something for you and when.",
+        "Offer help to someone in trouble, and thank someone for their help."
+      ],
+      "stages": [
+        {
+          "title": "Saying Thanks",
+          "focus": "Thank people for gifts and help, and say who did what for you.",
+          "lessons": [
+            "Thank You",
+            "My Mum Made It",
+            "Thanks for Your Help"
+          ]
+        }
+      ],
+      "expansions": [
+        {
+          "title": "Practices and books",
+          "scope": "One general practice and one general book per part; the アクティビティー becomes a practice on the last part, and the よみましょう a book.",
+          "readiness": "Finish the part the practice or book is homed at."
+        }
+      ],
+      "capstone": "Thank a boss after a meal and choose what to say in four situations (the アクティビティー); read a story of being helped abroad (よみましょう).",
+      "transfer": "Asking a Favour turns the て form into requests.",
+      "status": "sample"
+    },
+    {
+      "id": "l12",
+      "title": "Asking a Favour",
+      "icon": "帰",
+      "level": 3,
+      "prerequisites": [
+        "l11"
+      ],
+      "summary": "Ask for help, politely or casually, and ask for permission.",
+      "outcomes": [
+        "Give a reason and make a simple request, and ask about and follow a simple procedure.",
+        "Give a reason and make a polite request, and explain a problem and ask for help.",
+        "Make a simple request to a friend, and ask a friend for something awkward.",
+        "Say you feel unwell and leave early or take time off, giving a reason and getting permission."
+      ],
+      "stages": [
+        {
+          "title": "Asking a Favour",
+          "focus": "Ask for help, politely or casually, and ask for permission.",
+          "lessons": [
+            "Could You Show Me?",
+            "Would You Take a Look?",
+            "Lend Me an Eraser",
+            "May I Go Home?"
+          ]
+        }
+      ],
+      "expansions": [
+        {
+          "title": "Practices and books",
+          "scope": "One general practice and one general book per part; the アクティビティー becomes a practice on the last part, and the よみましょう a book.",
+          "readiness": "Finish the part the practice or book is homed at."
+        }
+      ],
+      "capstone": "Role-play asking for help in four situations (the アクティビティー); read a university test notice (よみましょう).",
+      "transfer": "Invitations moves on to inviting people.",
+      "status": "sample"
+    },
+    {
+      "id": "l13",
+      "title": "Invitations",
+      "icon": "飲",
+      "level": 3,
+      "prerequisites": [
+        "l12"
+      ],
+      "summary": "Invite people, and accept or turn down an invitation politely.",
+      "outcomes": [
+        "Invite a coworker for a meal, accept and discuss where to go.",
+        "Invite a coworker to go out, and settle the date when invited.",
+        "Invite a friend to an event, and turn down a friend’s invitation."
+      ],
+      "stages": [
+        {
+          "title": "Invitations",
+          "focus": "Invite people, and accept or turn down an invitation politely.",
+          "lessons": [
+            "How About Japanese Food?",
+            "That Day's Tricky",
+            "Want to Try It?"
+          ]
+        }
+      ],
+      "expansions": [
+        {
+          "title": "Practices and books",
+          "scope": "One general practice and one general book per part; the アクティビティー becomes a practice on the last part, and the よみましょう a book.",
+          "readiness": "Finish the part the practice or book is homed at."
+        }
+      ],
+      "capstone": "Give a recruiting pitch for a university club (the アクティビティー); read a volunteer-recruitment poster (よみましょう).",
+      "transfer": "Good Advice moves on to giving advice.",
+      "status": "sample"
+    },
+    {
+      "id": "l14",
+      "title": "Good Advice",
+      "icon": "早",
+      "level": 3,
+      "prerequisites": [
+        "l13"
+      ],
+      "summary": "Give advice and suggestions for everyday problems.",
+      "outcomes": [
+        "Speak to someone who looks unwell, and give simple advice.",
+        "Pass on information that helps solve a problem, and say what you can and cannot do.",
+        "Ask whether someone has been somewhere, and explain, advise and suggest about a destination."
+      ],
+      "stages": [
+        {
+          "title": "Good Advice",
+          "focus": "Give advice and suggestions for everyday problems.",
+          "lessons": [
+            "See a Doctor",
+            "Try Searching Online",
+            "Why Not Give It a Go?"
+          ]
+        }
+      ],
+      "expansions": [
+        {
+          "title": "Practices and books",
+          "scope": "One general practice and one general book per part; the アクティビティー becomes a practice on the last part, and the よみましょう a book.",
+          "readiness": "Finish the part the practice or book is homed at."
+        }
+      ],
+      "capstone": "Advise a student struggling with kanji, then share a problem and advise each other (the アクティビティー); read a newspaper article on a new hospital (よみましょう).",
+      "transfer": "Saying Sorry closes the course with apologies.",
+      "status": "sample"
+    },
+    {
+      "id": "l15",
+      "title": "Saying Sorry",
+      "icon": "ご",
+      "level": 3,
+      "prerequisites": [
+        "l14"
+      ],
+      "summary": "Apologise for mistakes, politely and to friends.",
+      "outcomes": [
+        "Apologise politely for something you did.",
+        "Explain simply what happened.",
+        "Apologise to a friend, and explain to a friend what happened."
+      ],
+      "stages": [
+        {
+          "title": "Saying Sorry",
+          "focus": "Apologise for mistakes, politely and to friends.",
+          "lessons": [
+            "Sorry I Broke It",
+            "Sorry!"
+          ]
+        }
+      ],
+      "expansions": [
+        {
+          "title": "Practices and books",
+          "scope": "One general practice and one general book per part; the アクティビティー becomes a practice on the last part, and the よみましょう a book.",
+          "readiness": "Finish the part the practice or book is homed at."
+        }
+      ],
+      "capstone": "Say what you would do after a mistake in several situations (the アクティビティー); read an apology email for a lost book (よみましょう).",
+      "transfer": "The last stone of this book; the next book carries on from here.",
+      "status": "sample"
+    }
+  ],
+  "sources": [
+    {
+      "title": "つなぐにほんご 初級1 (Tsunagu Nihongo, Beginner 1)",
+      "url": "https://www.ask-books.com/tsunagu/",
+      "use": "The course book: lesson order, parts, scenes, patterns and script; with the school’s handout, the vocabulary of each part. Niwa’s dialogues, drills and readings are newly written."
+    },
+    {
+      "title": "みんなの日本語 初級 Translation & Grammar Notes",
+      "url": "https://www.3anet.co.jp/",
+      "use": "Reference for checking the app’s own grammar explanations."
+    }
+  ],
+  "kanjiChecks": {
+    "sentences": [],
+    "lookAlikes": []
+  },
+  "path": {
+    "version": 2,
+    "core": [
+      "l01p1",
+      "l01p2",
+      "l01p3",
+      "l02p1",
+      "l02p2",
+      "l02p3",
+      "l03p1",
+      "l03p2",
+      "l03p3",
+      "l04p1",
+      "l04p2",
+      "l04p3",
+      "l05p1",
+      "l05p2",
+      "l05p3",
+      "l06p1",
+      "l06p2",
+      "l06p3",
+      "l07p1",
+      "l07p2",
+      "l07p3",
+      "l08p1",
+      "l08p2",
+      "l09p1",
+      "l09p2",
+      "l09p3",
+      "l10p1",
+      "l10p2",
+      "l10p3",
+      "l11p1",
+      "l11p2",
+      "l11p3",
+      "l12p1",
+      "l12p2",
+      "l12p3",
+      "l12p4",
+      "l13p1",
+      "l13p2",
+      "l13p3",
+      "l14p1",
+      "l14p2",
+      "l14p3",
+      "l15p1",
+      "l15p2"
+    ],
+    "requires": {
+      "l01p1": [],
+      "l01p2": [
+        "l01p1"
+      ],
+      "l01p3": [
+        "l01p2"
+      ],
+      "l02p1": [
+        "l01p3"
+      ],
+      "l02p2": [
+        "l02p1"
+      ],
+      "l02p3": [
+        "l02p2"
+      ],
+      "l03p1": [
+        "l02p3"
+      ],
+      "l03p2": [
+        "l03p1"
+      ],
+      "l03p3": [
+        "l03p2"
+      ],
+      "l04p1": [
+        "l03p3"
+      ],
+      "l04p2": [
+        "l04p1"
+      ],
+      "l04p3": [
+        "l04p2"
+      ],
+      "l05p1": [
+        "l04p3"
+      ],
+      "l05p2": [
+        "l05p1"
+      ],
+      "l05p3": [
+        "l05p2"
+      ],
+      "l06p1": [
+        "l05p3"
+      ],
+      "l06p2": [
+        "l06p1"
+      ],
+      "l06p3": [
+        "l06p2"
+      ],
+      "l07p1": [
+        "l06p3"
+      ],
+      "l07p2": [
+        "l07p1"
+      ],
+      "l07p3": [
+        "l07p2"
+      ],
+      "l08p1": [
+        "l07p3"
+      ],
+      "l08p2": [
+        "l08p1"
+      ],
+      "l09p1": [
+        "l08p2"
+      ],
+      "l09p2": [
+        "l09p1"
+      ],
+      "l09p3": [
+        "l09p2"
+      ],
+      "l10p1": [
+        "l09p3"
+      ],
+      "l10p2": [
+        "l10p1"
+      ],
+      "l10p3": [
+        "l10p2"
+      ],
+      "l11p1": [
+        "l10p3"
+      ],
+      "l11p2": [
+        "l11p1"
+      ],
+      "l11p3": [
+        "l11p2"
+      ],
+      "l12p1": [
+        "l11p3"
+      ],
+      "l12p2": [
+        "l12p1"
+      ],
+      "l12p3": [
+        "l12p2"
+      ],
+      "l12p4": [
+        "l12p3"
+      ],
+      "l13p1": [
+        "l12p4"
+      ],
+      "l13p2": [
+        "l13p1"
+      ],
+      "l13p3": [
+        "l13p2"
+      ],
+      "l14p1": [
+        "l13p3"
+      ],
+      "l14p2": [
+        "l14p1"
+      ],
+      "l14p3": [
+        "l14p2"
+      ],
+      "l15p1": [
+        "l14p3"
+      ],
+      "l15p2": [
+        "l15p1"
+      ]
+    },
+    "checkpoints": [
+      "l01p3",
+      "l02p3",
+      "l03p3",
+      "l04p3",
+      "l05p3",
+      "l06p3",
+      "l07p3",
+      "l08p2",
+      "l09p3",
+      "l10p3",
+      "l11p3",
+      "l12p4",
+      "l13p3",
+      "l14p3",
+      "l15p2"
+    ]
+  },
+  "rules": {
+    "version": 1,
+    "kanjiWordsPerLesson": {
+      "min": 0,
+      "max": 10
+    },
+    "unseenTexts": {
+      "min": 0,
+      "max": 6
+    },
+    "stagesPerStone": {
+      "min": 1
+    },
+    "kanjiCheckSentences": {
+      "required": false
+    }
+  }
+}

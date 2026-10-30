@@ -1,0 +1,51 @@
+/* An uninterrupted water surface, with all art below the readable labels. The art (1448×1086 tiles) keeps one scale
+   and repeats down the pond, as Reading's table does (styles.css .reading-table): the pond's width wide, a fixed
+   height on narrow screens, so a pond of many koi is not drawn zoomed in. The tiles are not seamless, so each layer is
+   drawn twice: its background is the tile shifted down half a tile, and its ::after (the tile itself) fades out near
+   each repeat line, where the shifted copy, mid-tile there, shows through. --tile-h is one tile's height. */
+.practice-river{--water-opacity:.26;--water-tile:100% auto;--tile-h:75cqw;--seam-mask:linear-gradient(#0000,#000 14%,#000 86%,#0000);position:relative;isolation:isolate;overflow:hidden;container-type:inline-size;max-width:var(--scene-max);margin:0 auto;border:1px solid #527b7333;border-radius:20px;background:#78a7a4;box-shadow:0 8px 30px #18372c0c;color:#193f3d}
+.practice-river::before,.practice-river::after,.river-bed::after,.river-water::after{content:'';position:absolute;inset:0;background:var(--tile-art) center top/var(--water-tile) repeat-y;pointer-events:none}
+.practice-river::before,.practice-river::after{--tile-art:url('assets/river/water-overlay.webp');z-index:-1}
+.practice-river::before{background-position:center calc(var(--tile-h) / 2)}
+.practice-river::after,.river-bed::after,.river-water::after{-webkit-mask:var(--seam-mask) center top/100% var(--tile-h) repeat-y;mask:var(--seam-mask) center top/100% var(--tile-h) repeat-y}
+.river-bed,.river-water{position:absolute;inset:0;background:var(--tile-art) center calc(var(--tile-h) / 2)/var(--water-tile) repeat-y;pointer-events:none;user-select:none}
+.river-bed{--tile-art:url('assets/river/riverbed.webp');z-index:0;opacity:.32}
+.river-water{--tile-art:url('assets/river/water-overlay.webp');z-index:2;opacity:var(--water-opacity)}
+.river-topline{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 22px 16px;border-bottom:1px solid #335d5826;color:#224e4b}
+.river-topline>span:first-child{display:flex;align-items:center;gap:12px}
+.river-topline [lang=ja]{font-family:'Noto Sans JP',sans-serif;font-size:1.25rem}
+.river-topline>span:first-child>span:last-child{font-size:.58rem;letter-spacing:.17em;font-weight:600}
+.river-topline>span+span{font-size:.7rem}
+/* Koi alternate lanes down the pond, each dropped and turned by its place (river.mjs pondPlaces: --koi-lane, --koi-lift,
+   --koi-turn), so a lone koi in a home lesson's group can sit on either side. */
+.river-pools{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:12px;min-height:520px;padding:8px 12% 44px}
+.river-node{position:relative;display:flex;flex-direction:column;align-items:center;min-width:0;padding:calc(50px + var(--koi-lift,0px)) 4px 0;grid-column:var(--koi-lane,auto);text-decoration:none;color:inherit;text-align:center;border-radius:18px;outline-offset:2px}
+.river-koi{position:relative;z-index:1;display:block;width:clamp(132px,15vw,182px);height:clamp(132px,15vw,182px);max-width:100%;filter:drop-shadow(3px 9px 5px #244b4530);transform:rotate(var(--koi-turn,0deg));transition:transform .35s ease,filter .35s ease}
+.river-koi img{display:block;width:100%;height:100%;object-fit:contain}
+.river-node:hover .river-koi,.river-node:focus-visible .river-koi{transform:translateY(-5px) rotate(calc(var(--koi-turn,0deg) - 3deg));filter:drop-shadow(3px 11px 5px #244b4545)}
+.river-node-label{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;gap:5px;width:100%;max-width:245px;margin-top:9px;padding:4px 5px 10px;text-shadow:0 1px 5px #f0f5e5,0 0 12px #edf4e4}
+.river-node-kind{font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#365854}
+.river-node-title{font-size:1rem;font-weight:650;line-height:1.35;max-width:230px;text-wrap:balance}
+.river-node-status{font-size:.73rem;font-weight:650;line-height:1.4;padding:3px 9px;border-radius:99px;background:#eff5e7c9;color:#224b43;text-shadow:none}
+.river-node.is-done .river-node-status{background:#e5efcced;color:#365d31}
+.river-node:focus-visible{outline:0}
+.river-node:focus-visible .river-node-label{outline:3px solid #214f46;outline-offset:5px;border-radius:10px}
+/* A revealed set: the koi's shape only, flat and dark under the water, with no label and no way in. */
+.river-node.is-silhouette{pointer-events:none;user-select:none}
+.river-node.is-silhouette .river-koi{filter:brightness(0);opacity:.24;transition:none}
+.river-footnote{position:relative;z-index:3;margin:0;padding:16px 16px 20px;text-align:center;color:#365d57;font-size:.74rem;border-top:1px solid #335d581a;text-shadow:0 1px 6px #eff4e4}
+@media(max-width:800px){
+ .river-pools{gap:8px;padding-left:6%;padding-right:6%;min-height:500px}
+ .river-node-title{font-size:.9rem}.river-node-kind{font-size:.55rem}
+}
+@media(max-width:650px){.practice-river{--water-tile:auto 560px;--tile-h:560px}}
+@media(max-width:520px){
+ .river-topline{padding:14px}.river-topline>span:first-child{gap:8px}.river-topline>span+span{font-size:.65rem}
+ .river-pools{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 10px;padding:30px 12px 28px;min-height:0}
+ .river-node{padding:calc(var(--koi-lift,0px) * .5) 0 0}
+ .river-koi{width:140px;height:140px}
+ .river-node-label{padding:4px 0 8px}
+ .river-node-title{font-size:.84rem}.river-node-status{font-size:.68rem}
+ .river-pools:empty{min-height:240px}
+}
+@media(prefers-reduced-motion:reduce){.river-koi{transition:none}.river-node:hover .river-koi,.river-node:focus-visible .river-koi{transform:rotate(var(--koi-turn,0deg))}}

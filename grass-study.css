@@ -1,0 +1,14 @@
+/* The garden's watercolor grass, painted in bands behind the rows (grass-study.mjs). */
+.field[data-garden=watercolor]{background:#5b784a}
+.field[data-garden=watercolor]::before{display:none}
+.garden-grass{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.garden-grass-band{
+ position:absolute;left:0;right:0;
+ background-image:linear-gradient(#16432b55,#16432b55),url('assets/garden/grass-watercolor-demo.webp');
+ background-size:100% 100%,max(100%,720px) auto;
+ background-position:center,center var(--grass-position);
+ background-repeat:no-repeat;
+}
+/* An opaque underlying section always sits below the 72px transition.
+   Only internal joins blend: the garden's outside edges remain fully painted. */
+.garden-grass-band:not(:first-child){mask-image:linear-gradient(to bottom,transparent,#000 72px)}
