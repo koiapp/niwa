@@ -18,8 +18,8 @@
 //                 alsoRead, or the reading of a same-written words[]/special[] entry: validReadings).
 //  - soundMatch   Which kanji is read like this? The kanji's on and kun readings; four kanji.
 // The app draws them (rubyHTML for every Japanese line) and composes its feedback from feedbackOf.
-import {seeded,shuffled} from './kanji-words.mjs?b=2bde53d';
-import {plainReading,plainWritten,wordTokens} from './kanji-characters.mjs?b=2bde53d';
+import {seeded,shuffled} from './kanji-words.mjs?b=8b9c4fd';
+import {plainReading,plainWritten,wordTokens} from './kanji-characters.mjs?b=8b9c4fd';
 export const PER_KANJI=5;
 export const KINDS=Object.freeze(['meaning','readingHere','chooseKanji','wordReading','soundMatch']);
 const PROMPTS=Object.freeze({

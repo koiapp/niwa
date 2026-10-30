@@ -3,10 +3,10 @@
 // tools/validate.mjs and the tests; nothing here touches the DOM. Every answer is a tap or a drag: choose, fill a gap,
 // build a sentence from tiles, find the ★ tile, match pairs, ○ / ×, sort cards into groups, or complete a conversation
 // from a word bank. There is no typing and no audio.
-import {insideRuby,plainReading,plainWritten,sourceLines} from './vocabulary.mjs?b=2bde53d';
-import {seededOrder} from './recall.mjs?b=2bde53d';
-import {kanjiWordIndex,resolveText} from './kanji-words.mjs?b=2bde53d';
-import {isRetiredLessonReason} from './lesson-retirements.mjs?b=2bde53d';
+import {insideRuby,plainReading,plainWritten,sourceLines} from './vocabulary.mjs?b=8b9c4fd';
+import {seededOrder} from './recall.mjs?b=8b9c4fd';
+import {kanjiWordIndex,resolveText} from './kanji-words.mjs?b=8b9c4fd';
+import {isRetiredLessonReason} from './lesson-retirements.mjs?b=8b9c4fd';
 
 export const FORMATS=['choice','blank','order','star','match','truefalse','sort','cloze'];
 // Formats counted once per pair, card or gap. Every other format counts once per item.

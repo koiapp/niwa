@@ -5,9 +5,9 @@
 // it and re-enters the existing scheduling (patterns.mjs re-tests, the lesson's own review). Nothing here touches the DOM;
 // every function takes `now`, so tests inject the clock. The path is read as authored; progression.mjs stays the only
 // source of the next lesson, and the app composes it with checkpoint access. Optional reviews never gate it.
-import {seededOrder,scheduleReview,isConverted} from './recall.mjs?b=2bde53d';
-import {FOCUS_KEY,unitItems,unitKeys,hasUnit,wordEntries,itemChecks,markupProblems,gradeChoice,gradeTrueFalse,gradeOrder,gradeStar,gradeMatch,gradeGap,answerSentences,starSentence} from './exercises.mjs?b=2bde53d';
-import {recordMiss,patternIndex} from './patterns.mjs?b=2bde53d';
+import {seededOrder,scheduleReview,isConverted} from './recall.mjs?b=8b9c4fd';
+import {FOCUS_KEY,unitItems,unitKeys,hasUnit,wordEntries,itemChecks,markupProblems,gradeChoice,gradeTrueFalse,gradeOrder,gradeStar,gradeMatch,gradeGap,answerSentences,starSentence} from './exercises.mjs?b=8b9c4fd';
+import {recordMiss,patternIndex} from './patterns.mjs?b=8b9c4fd';
 
 export const CHECKPOINT_VERSION=1;
 // Without authored anchors, a checkpoint follows every CADENCE lessons. Each run asks max(RECENT_MIN, new lessons) recent items, at least

@@ -12,12 +12,12 @@
 //                      as one round. A lesson whose misses carry no pattern has no evidence to route on.
 // A prompt is never one this episode has used, and never the failing cue itself. Nothing here touches the DOM or the
 // clock; answers and the single schedule credit at completion go through applyRecovery.
-import {splitKey,recoveryKey,recoveryRevision,recoveryDue,answerRecovery,recoveryEvent,readRecovery,PROMPT_ID} from './schedule.mjs?b=2bde53d';
-import {reviewTarget,scheduleReview,passageKey,phraseKey,seededOrder,attemptsFor,sentenceSpans,isConverted} from './recall.mjs?b=2bde53d';
-import {plainWritten,plainReading,indexWords,inReadingText,resolvePath,sentenceRange,senseFor,isKanjiWord,hasKanji,sentencesFor,readingChoices,recoverTransfer,insideRuby,RUBY_PATTERN,sourceLines,familiarLine} from './vocabulary.mjs?b=2bde53d';
-import {reviewPrompts,applyRating} from './flashcards.mjs?b=2bde53d';
-import {hasUnit,unitItems,lastReviewAnswer} from './exercises.mjs?b=2bde53d';
-import {patternIndex,recordFor,exposures} from './patterns.mjs?b=2bde53d';
+import {splitKey,recoveryKey,recoveryRevision,recoveryDue,answerRecovery,recoveryEvent,readRecovery,PROMPT_ID} from './schedule.mjs?b=8b9c4fd';
+import {reviewTarget,scheduleReview,passageKey,phraseKey,seededOrder,attemptsFor,sentenceSpans,isConverted} from './recall.mjs?b=8b9c4fd';
+import {plainWritten,plainReading,indexWords,inReadingText,resolvePath,sentenceRange,senseFor,isKanjiWord,hasKanji,sentencesFor,readingChoices,recoverTransfer,insideRuby,RUBY_PATTERN,sourceLines,familiarLine} from './vocabulary.mjs?b=8b9c4fd';
+import {reviewPrompts,applyRating} from './flashcards.mjs?b=8b9c4fd';
+import {hasUnit,unitItems,lastReviewAnswer} from './exercises.mjs?b=8b9c4fd';
+import {patternIndex,recordFor,exposures} from './patterns.mjs?b=8b9c4fd';
 
 // The rounds of a passage or a lesson hold at most this many prompts.
 export const ROUND_MAX=3;
